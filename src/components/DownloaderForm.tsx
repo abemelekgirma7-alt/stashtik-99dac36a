@@ -143,7 +143,7 @@ export function DownloaderForm({
           <input
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder={placeholder}
+            placeholder={url ? placeholder : (typedPlaceholder || placeholder) + "▍"}
             inputMode="url"
             autoComplete="off"
             disabled={loading}
