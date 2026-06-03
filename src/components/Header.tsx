@@ -35,9 +35,12 @@ export function Header() {
           <ThemeToggle />
           <Link
             to="/app"
-            className="hidden rounded-full bg-brand-gradient px-4 py-2 text-sm font-semibold text-white shadow-brand transition-transform hover:scale-105 md:inline-flex"
+            className="relative hidden rounded-full bg-brand-gradient px-4 py-2 text-sm font-semibold text-white shadow-brand transition-transform hover:scale-105 md:inline-flex"
           >
             Install App
+            <span className="ml-2 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+              Soon
+            </span>
           </Link>
           <button
             onClick={() => setOpen((v) => !v)}
