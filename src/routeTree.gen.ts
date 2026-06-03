@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StoriesRouteImport } from './routes/stories'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as Mp3RouteImport } from './routes/mp3'
 import { Route as HowToRouteImport } from './routes/how-to'
@@ -28,6 +29,11 @@ const TermsRoute = TermsRouteImport.update({
 const StoriesRoute = StoriesRouteImport.update({
   id: '/stories',
   path: '/stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/how-to': typeof HowToRoute
   '/mp3': typeof Mp3Route
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stories': typeof StoriesRoute
   '/terms': typeof TermsRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/how-to': typeof HowToRoute
   '/mp3': typeof Mp3Route
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stories': typeof StoriesRoute
   '/terms': typeof TermsRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/how-to': typeof HowToRoute
   '/mp3': typeof Mp3Route
   '/privacy': typeof PrivacyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stories': typeof StoriesRoute
   '/terms': typeof TermsRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/how-to'
     | '/mp3'
     | '/privacy'
+    | '/sitemap.xml'
     | '/stories'
     | '/terms'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/how-to'
     | '/mp3'
     | '/privacy'
+    | '/sitemap.xml'
     | '/stories'
     | '/terms'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/how-to'
     | '/mp3'
     | '/privacy'
+    | '/sitemap.xml'
     | '/stories'
     | '/terms'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   HowToRoute: typeof HowToRoute
   Mp3Route: typeof Mp3Route
   PrivacyRoute: typeof PrivacyRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StoriesRoute: typeof StoriesRoute
   TermsRoute: typeof TermsRoute
 }
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/stories'
       fullPath: '/stories'
       preLoaderRoute: typeof StoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   HowToRoute: HowToRoute,
   Mp3Route: Mp3Route,
   PrivacyRoute: PrivacyRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StoriesRoute: StoriesRoute,
   TermsRoute: TermsRoute,
 }
