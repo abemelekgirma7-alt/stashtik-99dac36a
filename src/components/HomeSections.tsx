@@ -3,7 +3,6 @@ import {
   ShieldCheck,
   Sparkles,
   Video,
-  Music,
   Infinity as InfinityIcon,
   Lock,
 } from "lucide-react";
