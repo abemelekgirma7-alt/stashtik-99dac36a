@@ -67,6 +67,16 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
+            <Link
+              to="/app"
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-flex items-center justify-center rounded-full bg-brand-gradient px-4 py-2.5 text-sm font-semibold text-white shadow-brand"
+            >
+              Install App
+              <span className="ml-2 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                Soon
+              </span>
+            </Link>
           </nav>
         </div>
       )}
