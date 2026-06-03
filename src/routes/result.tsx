@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { z } from "zod";
-import { Loader2, RotateCcw, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, RotateCcw, CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ResultCard, type Mode } from "@/components/ResultCard";
@@ -30,29 +30,74 @@ function ResultPage() {
   const fetchFn = useServerFn(fetchTikTok);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(8);
-  const [status, setStatus] = useState("Fetching TikTok…");
+  const [status, setStatus] = useState("Contacting TikTok…");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TikTokSuccess | null>(null);
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
-  const startedRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const attemptRef = useRef(0);
 
-  useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
+  const clearProgress = () => {
+    if (progressTimer.current) {
+      clearInterval(progressTimer.current);
+      progressTimer.current = null;
+    }
+  };
 
+  const startFetch = useCallback(() => {
+    attemptRef.current += 1;
+    const myAttempt = attemptRef.current;
+    setError(null);
+    setResult(null);
+    setLoading(true);
+    setProgress(8);
+    setStatus("Contacting TikTok…");
+    clearProgress();
+
+    // Real-ish staged status updates based on elapsed time.
+    const stages = [
+      { at: 600, p: 25, s: "Resolving TikTok link…" },
+      { at: 1400, p: 45, s: "Fetching media…" },
+      { at: 2600, p: 65, s: "Removing watermark…" },
+      { at: 4200, p: 82, s: "Preparing download…" },
+    ];
+    const t0 = Date.now();
     progressTimer.current = setInterval(() => {
-      setProgress((p) => (p < 92 ? p + Math.max(1, (95 - p) / 12) : p));
-    }, 180);
+      const elapsed = Date.now() - t0;
+      const stage = [...stages].reverse().find((x) => elapsed >= x.at);
+      if (stage) {
+        setProgress((p) => (p < stage.p ? stage.p : p));
+        setStatus((s) => (s === stage.s ? s : stage.s));
+      }
+      setProgress((p) => (p < 92 ? p + Math.max(0.4, (94 - p) / 30) : p));
+    }, 200);
+
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
 
     (async () => {
       try {
-        const res = await fetchFn({ data: { url: u } });
-        if (!res.ok) setError(res.error);
-        else {
-          setStatus("Ready!");
-          setResult(res);
+        const res = await fetchFn({ data: { url: u }, signal: ctrl.signal } as never);
+        if (myAttempt !== attemptRef.current) return; // stale
+        if (!res.ok) {
+          setError(res.error);
+        } else {
+          // Mode-specific validation.
+          if (m === "photos" && (!res.images || res.images.length === 0)) {
+            setError(
+              "Error — this isn't a photo link. The URL you pasted is a video or audio. Please paste a TikTok photo / slideshow link, or use the Video downloader.",
+            );
+          } else {
+            setStatus("Ready!");
+            setResult(res);
+          }
         }
       } catch (err) {
+        if (myAttempt !== attemptRef.current) return;
+        if ((err as Error)?.name === "AbortError") {
+          setError("Canceled.");
+          return;
+        }
         const msg = err instanceof Error ? err.message : "Something went wrong.";
         setError(
           msg.includes("[")
@@ -60,17 +105,28 @@ function ResultPage() {
             : msg,
         );
       } finally {
-        if (progressTimer.current) clearInterval(progressTimer.current);
+        if (myAttempt !== attemptRef.current) return;
+        clearProgress();
         setProgress(100);
         setLoading(false);
       }
     })();
+  }, [fetchFn, u, m]);
 
+  useEffect(() => {
+    startFetch();
     return () => {
-      if (progressTimer.current) clearInterval(progressTimer.current);
+      clearProgress();
+      abortRef.current?.abort();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [u]);
+  }, [startFetch]);
+
+  const cancel = () => {
+    abortRef.current?.abort();
+    clearProgress();
+    setLoading(false);
+    setError("Canceled.");
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -81,7 +137,7 @@ function ResultPage() {
             Your <span className="text-brand-gradient">TikTok</span> download
           </h1>
 
-          {(loading || progress < 100) && (
+          {(loading || (progress < 100 && !error && !result)) && (
             <div className="mx-auto mt-6 max-w-xl">
               <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
                 <div
@@ -89,14 +145,25 @@ function ResultPage() {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                {progress >= 100 && !error ? (
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                ) : (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  {progress >= 100 && !error ? (
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  ) : (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  )}
+                  {status} <span className="opacity-60">({Math.round(progress)}%)</span>
+                </p>
+                {loading && (
+                  <button
+                    type="button"
+                    onClick={cancel}
+                    className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold hover:bg-secondary"
+                  >
+                    <X className="h-3 w-3" /> Cancel
+                  </button>
                 )}
-                {status}
-              </p>
+              </div>
             </div>
           )}
 
@@ -104,15 +171,22 @@ function ResultPage() {
             <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-destructive/30 bg-destructive/5 p-5 text-sm text-destructive">
               <div className="flex items-start gap-2">
                 <AlertTriangle className="mt-0.5 h-4 w-4 flex-none" />
-                <div>
+                <div className="flex-1">
                   <p className="font-semibold">We couldn't process that link.</p>
                   <p className="mt-1 opacity-90">{error}</p>
-                  <div className="mt-3 flex gap-2">
-                    <Link
-                      to="/"
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={startFetch}
                       className="inline-flex items-center gap-1 rounded-lg bg-brand-gradient px-3 py-1.5 text-xs font-semibold text-white"
                     >
-                      <RotateCcw className="h-3 w-3" /> Try another link
+                      <RotateCcw className="h-3 w-3" /> Retry
+                    </button>
+                    <Link
+                      to="/"
+                      className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
+                    >
+                      Try another link
                     </Link>
                   </div>
                 </div>
