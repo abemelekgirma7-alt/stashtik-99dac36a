@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Mail, Send, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
 
+const CONTACT_EMAIL = "abimelekgirma@gmail.com";
+
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
@@ -42,6 +44,13 @@ function Contact() {
       return;
     }
     setErrors({});
+
+    // Open the user's email client with a pre-filled message addressed to us.
+    const { name, email, message } = parsed.data;
+    const subject = `SnapTok contact from ${name}`;
+    const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
+    const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
     setSent(true);
   };
 
@@ -53,18 +62,33 @@ function Contact() {
         description="Bug reports, takedown requests, partnerships, or just a hello — we'd love to hear from you."
       />
       <section className="container mx-auto max-w-2xl px-4 pb-16">
-        <div className="mb-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft">
-          <Mail className="h-5 w-5 text-muted-foreground" />
-          <a href="mailto:hello@snaptok.app" className="text-sm font-medium">
-            hello@snaptok.app
-          </a>
-        </div>
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          className="mb-6 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-soft hover:bg-secondary/60"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-brand">
+            <Mail className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-xs text-muted-foreground">Email us directly</p>
+            <p className="text-sm font-semibold">{CONTACT_EMAIL}</p>
+          </div>
+        </a>
 
         {sent ? (
           <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-soft">
             <CheckCircle2 className="mx-auto h-10 w-10 text-brand-gradient" />
-            <h2 className="mt-3 text-xl font-semibold">Message sent!</h2>
-            <p className="mt-1 text-muted-foreground">We'll get back to you within a couple of days.</p>
+            <h2 className="mt-3 text-xl font-semibold">Message ready to send!</h2>
+            <p className="mt-1 text-muted-foreground">
+              We opened your email app with the message pre-filled. Just hit send and we'll reply within a couple of days.
+            </p>
+            <button
+              type="button"
+              onClick={() => setSent(false)}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold hover:bg-secondary"
+            >
+              Send another
+            </button>
           </div>
         ) : (
           <form onSubmit={onSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-soft">
@@ -97,6 +121,9 @@ function Contact() {
             >
               <Send className="h-4 w-4" /> Send message
             </button>
+            <p className="text-center text-[11px] text-muted-foreground">
+              Sending opens your email app, addressed to {CONTACT_EMAIL}.
+            </p>
           </form>
         )}
       </section>
