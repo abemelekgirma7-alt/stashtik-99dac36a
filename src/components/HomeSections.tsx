@@ -5,7 +5,10 @@ import {
   Video,
   Infinity as InfinityIcon,
   Lock,
+  Smartphone,
+  ArrowRight,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import {
   Accordion,
   AccordionContent,
@@ -13,6 +16,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { StepsSection } from "./StepsSection";
+import { LogoMark } from "./Logo";
 
 /** Shared marketing sections reused on Video, Stories, and MP3 pages. */
 export function HomeSections() {
@@ -35,6 +39,29 @@ export function HomeSections() {
       </section>
 
       <StepsSection />
+
+      <section className="container mx-auto px-4 py-12">
+        <Link
+          to="/app"
+          className="group relative mx-auto flex max-w-4xl flex-col items-center gap-5 overflow-hidden rounded-3xl bg-brand-gradient p-6 text-center text-white shadow-brand transition-transform hover:scale-[1.01] sm:flex-row sm:p-8 sm:text-left"
+        >
+          <div className="flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm sm:h-20 sm:w-20">
+            <LogoMark className="h-12 w-12 sm:h-14 sm:w-14" />
+          </div>
+          <div className="flex-1">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+              <Smartphone className="h-3 w-3" /> Install App
+            </span>
+            <h3 className="mt-2 text-xl font-bold sm:text-2xl md:text-3xl">Get StashTik on your home screen</h3>
+            <p className="mt-1 text-sm text-white/85 sm:text-base">
+              One-tap launch on iPhone, Android, and desktop. Free, fast, no app store needed.
+            </p>
+          </div>
+          <span className="inline-flex flex-none items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-foreground shadow-soft transition-transform group-hover:translate-x-1">
+            Install now <ArrowRight className="h-4 w-4" />
+          </span>
+        </Link>
+      </section>
 
       <section className="container mx-auto px-4 py-16">
         <SectionHeading

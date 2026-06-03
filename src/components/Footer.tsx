@@ -5,13 +5,15 @@ export function Footer() {
   return (
     <footer className="mt-16 border-t border-border bg-secondary/40 md:mt-24">
       <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="mb-6 max-w-md md:mb-10">
-          <Logo />
+        <div className="mb-6 max-w-md md:mx-auto md:mb-10 md:text-center">
+          <div className="md:flex md:justify-center">
+            <Logo />
+          </div>
           <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
             Free TikTok downloader — videos without watermark, stories, photos, and MP3 audio. Works on any device.
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-3 sm:gap-6">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 md:mx-auto md:max-w-3xl md:text-center">
           <FooterCol title="Tools">
             <FLink to="/">Video</FLink>
             <FLink to="/stories">Stories</FLink>
