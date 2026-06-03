@@ -5,7 +5,10 @@ import {
   Video,
   Infinity as InfinityIcon,
   Lock,
+  Smartphone,
+  ArrowRight,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import {
   Accordion,
   AccordionContent,
@@ -13,6 +16,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { StepsSection } from "./StepsSection";
+import { LogoMark } from "./Logo";
 
 /** Shared marketing sections reused on Video, Stories, and MP3 pages. */
 export function HomeSections() {
