@@ -109,19 +109,33 @@ export function ResultCard({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft animate-fade-up">
-      <div className="grid gap-4 p-3 sm:grid-cols-[120px_1fr] sm:gap-5 sm:p-5 md:grid-cols-[140px_1fr]">
-        {result.cover && (
-          <div className="relative mx-auto sm:mx-0">
-            <img
-              src={result.cover}
-              alt={result.title}
-              className="aspect-[9/14] w-24 rounded-xl object-cover sm:w-[120px] md:w-[140px]"
-              loading="lazy"
+      <div className="grid gap-4 p-3 sm:grid-cols-[200px_1fr] sm:gap-5 sm:p-5 md:grid-cols-[240px_1fr]">
+        {!hasImages && mode !== "mp3" && result.videoNoWatermark ? (
+          <div className="mx-auto sm:mx-0">
+            <video
+              src={result.videoNoWatermark}
+              poster={result.cover}
+              controls
+              playsInline
+              preload="metadata"
+              className="aspect-[9/16] w-40 rounded-xl bg-black object-cover sm:w-[200px] md:w-[240px]"
             />
-            <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/20 opacity-0 transition-opacity hover:opacity-100">
-              <PlayCircle className="h-8 w-8 text-white" />
-            </span>
+            <p className="mt-1 text-center text-[10px] text-muted-foreground">Preview without watermark</p>
           </div>
+        ) : (
+          result.cover && (
+            <div className="relative mx-auto sm:mx-0">
+              <img
+                src={result.cover}
+                alt={result.title}
+                className="aspect-[9/14] w-24 rounded-xl object-cover sm:w-[200px] md:w-[240px]"
+                loading="lazy"
+              />
+              <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/20 opacity-0 transition-opacity hover:opacity-100">
+                <PlayCircle className="h-8 w-8 text-white" />
+              </span>
+            </div>
+          )
         )}
         <div className="flex flex-col">
           <p className="text-xs text-muted-foreground">@{result.author}</p>

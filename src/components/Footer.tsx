@@ -11,7 +11,7 @@ export function Footer() {
             Free TikTok downloader — videos without watermark, stories, photos, and MP3 audio. Works on any device.
           </p>
         </div>
-        <div className="grid grid-cols-4 gap-3 sm:gap-6">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6">
           <FooterCol title="Tools">
             <FLink to="/">Video</FLink>
             <FLink to="/stories">Stories</FLink>
@@ -28,10 +28,6 @@ export function Footer() {
             <FLink to="/privacy">Privacy Policy</FLink>
             <FLink to="/cookies">Cookie Policy</FLink>
             <FLink to="/terms">Terms of Service</FLink>
-          </FooterCol>
-          <FooterCol title="Support">
-            <FLink to="/contact">Report a bug</FLink>
-            <FLink to="/contact">Takedown</FLink>
           </FooterCol>
         </div>
       </div>

@@ -20,9 +20,54 @@ export function DownloaderForm({
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [typedPlaceholder, setTypedPlaceholder] = useState("");
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSubmittedRef = useRef<string>("");
 
+  // Typing animation for the placeholder.
+  useEffect(() => {
+    if (url) return; // pause when user is typing
+    const phrases =
+      mode === "mp3"
+        ? ["Paste TikTok audio link…", "https://vm.tiktok.com/…", "Paste any TikTok link for MP3…"]
+        : mode === "stories"
+          ? ["Paste TikTok story link…", "Story or slideshow URL…", "https://www.tiktok.com/@user/…"]
+          : mode === "photos"
+            ? ["Paste TikTok photo / slideshow link…", "https://www.tiktok.com/@user/photo/…"]
+            : ["Paste TikTok video link here…", "https://vm.tiktok.com/…", "https://www.tiktok.com/@user/video/…"];
+    let phraseIdx = 0;
+    let charIdx = 0;
+    let deleting = false;
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      const current = phrases[phraseIdx];
+      if (!deleting) {
+        charIdx++;
+        setTypedPlaceholder(current.slice(0, charIdx));
+        if (charIdx >= current.length) {
+          setTimeout(() => {
+            deleting = true;
+            tick();
+          }, 1400);
+          return;
+        }
+      } else {
+        charIdx--;
+        setTypedPlaceholder(current.slice(0, charIdx));
+        if (charIdx <= 0) {
+          deleting = false;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+        }
+      }
+      setTimeout(tick, deleting ? 35 : 70);
+    };
+    const t = setTimeout(tick, 200);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [url, mode]);
   const stopProgress = () => {
     if (progressTimer.current) {
       clearInterval(progressTimer.current);
@@ -98,7 +143,7 @@ export function DownloaderForm({
           <input
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder={placeholder}
+            placeholder={url ? placeholder : (typedPlaceholder || placeholder) + "▍"}
             inputMode="url"
             autoComplete="off"
             disabled={loading}
