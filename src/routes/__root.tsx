@@ -78,7 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#FF0050" },
-      { title: "SnapTok — TikTok Downloader Without Watermark" },
+      { title: "Tiktok Downloader - Download Video tiktok Without Watermark" },
       { name: "description", content: "Free TikTok video downloader. No watermark, HD MP4, MP3 audio, and stories." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

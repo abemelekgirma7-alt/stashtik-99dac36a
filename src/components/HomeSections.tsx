@@ -3,7 +3,6 @@ import {
   ShieldCheck,
   Sparkles,
   Video,
-  Music,
   Infinity as InfinityIcon,
   Lock,
 } from "lucide-react";
@@ -13,6 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { StepsSection } from "./StepsSection";
 
 /** Shared marketing sections reused on Video, Stories, and MP3 pages. */
 export function HomeSections() {
@@ -24,7 +24,7 @@ export function HomeSections() {
           title="The fastest TikTok downloader on the web"
           description="SnapTok is a free online TikTok downloader that saves videos in HD MP4 without watermark. Works on iOS, Android, Windows, and macOS — just paste the URL."
         />
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3">
           <Feature icon={<Zap />} title="Fast & Free Downloads" desc="Grab HD clips in seconds. No registration, no apps, no hidden costs." />
           <Feature icon={<Video />} title="MP4 & MP3" desc="Save the full video as HD MP4 or just the audio as MP3 with a single tap." />
           <Feature icon={<Sparkles />} title="HD Quality" desc="Preserves sharp details and original resolution every time." />
@@ -34,29 +34,7 @@ export function HomeSections() {
         </div>
       </section>
 
-      <section className="bg-secondary/40 py-16">
-        <div className="container mx-auto px-4">
-          <SectionHeading
-            eyebrow="How to use"
-            title="Download a TikTok in 4 steps"
-            description="Quick, simple, and works on any device."
-          />
-          <ol className="mt-10 grid gap-4 md:grid-cols-4">
-            {steps.map((s, i) => (
-              <li
-                key={s.title}
-                className="relative rounded-2xl border border-border bg-card p-5 shadow-soft"
-              >
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Step {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-2 text-lg font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      <StepsSection />
 
       <section className="container mx-auto px-4 py-16">
         <SectionHeading
@@ -83,30 +61,23 @@ function SectionHeading({ eyebrow, title, description }: { eyebrow: string; titl
   return (
     <div className="mx-auto max-w-2xl text-center">
       <span className="text-xs font-semibold uppercase tracking-wider text-brand-gradient">{eyebrow}</span>
-      <h2 className="mt-2 text-3xl font-bold md:text-4xl">{title}</h2>
-      <p className="mt-3 text-muted-foreground">{description}</p>
+      <h2 className="mt-2 text-2xl font-bold sm:text-3xl md:text-4xl">{title}</h2>
+      <p className="mt-3 text-sm text-muted-foreground sm:text-base">{description}</p>
     </div>
   );
 }
 
 function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-soft transition-transform hover:-translate-y-1">
-      <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-brand [&>svg]:h-5 [&>svg]:w-5">
+    <div className="rounded-2xl border border-border bg-card p-3 shadow-soft transition-all hover:-translate-y-1 hover:shadow-brand sm:p-6">
+      <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-brand sm:mb-4 sm:h-11 sm:w-11 [&>svg]:h-4 [&>svg]:w-4 sm:[&>svg]:h-5 sm:[&>svg]:w-5">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
+      <h3 className="text-sm font-semibold sm:text-lg">{title}</h3>
+      <p className="mt-1 text-xs text-muted-foreground sm:mt-2 sm:text-sm">{desc}</p>
     </div>
   );
 }
-
-const steps = [
-  { title: "Copy TikTok link", desc: "Open the TikTok app, tap Share, and choose Copy Link." },
-  { title: "Paste the URL", desc: "Paste the link into the search bar above on SnapTok." },
-  { title: "Auto-process", desc: "As soon as we detect a valid link, we start fetching — no extra clicks." },
-  { title: "Save the file", desc: "Tap Download to keep your no-watermark HD video, story, or MP3." },
-];
 
 const faqs = [
   {
