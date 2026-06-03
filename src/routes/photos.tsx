@@ -24,6 +24,7 @@ function Photos() {
   return (
     <SiteLayout>
       <PageHero
+        withLogo
         title={
           <>
             Download TikTok <span className="text-brand-gradient">Photos</span>
