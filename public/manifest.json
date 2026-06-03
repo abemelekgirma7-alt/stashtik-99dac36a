@@ -1,0 +1,16 @@
+{
+  "name": "SnapTok — TikTok Downloader",
+  "short_name": "SnapTok",
+  "description": "Download TikTok videos without watermark, stories, and MP3 audio.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF0050",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
