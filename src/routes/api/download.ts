@@ -20,15 +20,22 @@ export const Route = createFileRoute("/api/download")({
           return new Response("Missing url", { status: 400 });
         }
 
-        // Only allow common TikTok media CDNs to prevent open-proxy abuse.
+        // Only allow common TikTok / ByteDance media CDNs to prevent open-proxy abuse.
         let allowed = false;
         try {
           const t = new URL(target);
-          allowed = /(tiktok|tiktokcdn|tikwm|byteoversea|bytedance|musical)\./i.test(t.hostname);
+          allowed =
+            /(^|\.)(tiktok\.com|tiktokcdn\.com|tiktokcdn-us\.com|tiktokcdn-eu\.com|tikwm\.com|tikcdn\.io|tikcdn\.com|byteoversea\.com|byteoversea\.net|bytedance\.net|bytecdn\.cn|bytefcdn\.com|muscdn\.com|musical\.ly)$/i.test(
+              t.hostname,
+            ) || /(tiktok|tiktokcdn|tikwm|tikcdn|byteoversea|bytedance|bytefcdn|bytecdn|muscdn|musical)\./i.test(t.hostname);
         } catch {
           return new Response("Bad url", { status: 400 });
         }
-        if (!allowed) return new Response("Host not allowed", { status: 400 });
+        if (!allowed) {
+          return new Response(`Host not allowed: ${(() => { try { return new URL(target).hostname; } catch { return "?"; } })()}`, {
+            status: 400,
+          });
+        }
 
         const upstream = await fetch(target, {
           headers: {
