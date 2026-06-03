@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { PageHero } from "@/components/PageHero";
-import { Smartphone, MonitorSmartphone, Zap, ShieldCheck } from "lucide-react";
+import { Smartphone, MonitorSmartphone, Zap, ShieldCheck, Globe, AppWindow } from "lucide-react";
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/app")({
       {
         name: "description",
         content:
-          "Install SnapTok as a free Progressive Web App on iOS, Android, Windows, and macOS. Download TikToks like a native app.",
+          "Install SnapTok as a free Progressive Web App on iOS, Android, Windows, and macOS. Native apps and a browser extension are coming soon.",
       },
       { property: "og:title", content: "Install SnapTok App" },
       { property: "og:description", content: "Add SnapTok to your home screen for one-tap access." },
@@ -23,10 +23,26 @@ function AppPage() {
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Install"
         title={<>Get the <span className="text-brand-gradient">SnapTok App</span></>}
-        description="Add SnapTok to your home screen and use it like a native app — offline-ready and lightning fast."
+        description="Add SnapTok to your home screen and use it like a native app — lightning fast."
       />
+
+      <section className="container mx-auto max-w-4xl px-4 pb-6">
+        <div className="rounded-2xl border border-border bg-brand-soft p-5 shadow-soft">
+          <p className="text-xs font-semibold uppercase tracking-wider text-brand-gradient">Heads up</p>
+          <h2 className="mt-1 text-xl font-bold">Native apps & browser extension — coming soon</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            We're building dedicated SnapTok experiences across every platform. Until they launch, install the web
+            app below for the smoothest experience.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <SoonCard icon={<Globe />} label="Browser Extension" sub="Chrome, Edge, Brave, Firefox" />
+            <SoonCard icon={<Smartphone />} label="iOS App" sub="iPhone & iPad" />
+            <SoonCard icon={<AppWindow />} label="Android App" sub="Phones & tablets" />
+          </div>
+        </div>
+      </section>
+
       <section className="container mx-auto max-w-4xl px-4 pb-12">
         <div className="grid gap-6 md:grid-cols-2">
           <Card icon={<Smartphone />} title="On iPhone (Safari)">
@@ -79,6 +95,21 @@ function Card({ icon, title, children }: { icon: React.ReactNode; title: string;
       </div>
       <h3 className="text-lg font-semibold">{title}</h3>
       <div className="mt-3">{children}</div>
+    </div>
+  );
+}
+
+function SoonCard({ icon, label, sub }: { icon: React.ReactNode; label: string; sub: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4">
+      <div className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-white shadow-brand [&>svg]:h-4 [&>svg]:w-4">
+        {icon}
+      </div>
+      <p className="text-sm font-semibold">{label}</p>
+      <p className="text-xs text-muted-foreground">{sub}</p>
+      <span className="mt-2 inline-block rounded-full bg-card px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground ring-1 ring-border">
+        Coming soon
+      </span>
     </div>
   );
 }

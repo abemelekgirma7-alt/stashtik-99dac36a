@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Download, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 
 const nav = [
   { to: "/", label: "Video" },
   { to: "/stories", label: "Stories" },
-  { to: "/mp3", label: "MP3" },
+  { to: "/mp3", label: "Audio" },
   { to: "/how-to", label: "How to" },
   { to: "/app", label: "Get App" },
 ];
@@ -15,14 +17,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-brand">
-            <Download className="h-5 w-5 text-white" />
-          </span>
-          <span className="text-lg font-bold">
-            <span className="text-brand-gradient">SnapTok</span>
-          </span>
-        </Link>
+        <Logo />
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((n) => (
             <Link
@@ -36,19 +31,22 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <Link
-          to="/app"
-          className="hidden rounded-full bg-brand-gradient px-5 py-2 text-sm font-semibold text-white shadow-brand transition-transform hover:scale-105 md:inline-flex"
-        >
-          Install App
-        </Link>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="rounded-lg p-2 md:hidden"
-          aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link
+            to="/app"
+            className="hidden rounded-full bg-brand-gradient px-4 py-2 text-sm font-semibold text-white shadow-brand transition-transform hover:scale-105 md:inline-flex"
+          >
+            Install App
+          </Link>
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="rounded-lg p-2 md:hidden"
+            aria-label="Menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
       {open && (
         <div className="border-t border-border bg-background md:hidden">

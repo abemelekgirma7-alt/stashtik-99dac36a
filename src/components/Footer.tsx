@@ -1,17 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Download } from "lucide-react";
+import { Logo } from "./Logo";
 
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-border bg-secondary/40">
       <div className="container mx-auto grid gap-10 px-4 py-12 md:grid-cols-4">
         <div>
-          <Link to="/" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-brand">
-              <Download className="h-5 w-5 text-white" />
-            </span>
-            <span className="text-lg font-bold text-brand-gradient">SnapTok</span>
-          </Link>
+          <Logo />
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
             Free TikTok downloader — videos without watermark, stories, and MP3 audio. Works on any device.
           </p>
@@ -19,7 +14,7 @@ export function Footer() {
         <FooterCol title="Tools">
           <FLink to="/">Video Downloader</FLink>
           <FLink to="/stories">Story Downloader</FLink>
-          <FLink to="/mp3">MP3 Converter</FLink>
+          <FLink to="/mp3">Audio / MP3 Downloader</FLink>
           <FLink to="/app">Install App</FLink>
         </FooterCol>
         <FooterCol title="Company">
