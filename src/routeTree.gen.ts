@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResultRouteImport } from './routes/result'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PhotosRouteImport } from './routes/photos'
 import { Route as Mp3RouteImport } from './routes/mp3'
 import { Route as HowToRouteImport } from './routes/how-to'
 import { Route as CookiesRouteImport } from './routes/cookies'
@@ -37,9 +39,19 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResultRoute = ResultRouteImport.update({
+  id: '/result',
+  path: '/result',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhotosRoute = PhotosRouteImport.update({
+  id: '/photos',
+  path: '/photos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Mp3Route = Mp3RouteImport.update({
@@ -91,7 +103,9 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/how-to': typeof HowToRoute
   '/mp3': typeof Mp3Route
+  '/photos': typeof PhotosRoute
   '/privacy': typeof PrivacyRoute
+  '/result': typeof ResultRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stories': typeof StoriesRoute
   '/terms': typeof TermsRoute
@@ -105,7 +119,9 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/how-to': typeof HowToRoute
   '/mp3': typeof Mp3Route
+  '/photos': typeof PhotosRoute
   '/privacy': typeof PrivacyRoute
+  '/result': typeof ResultRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stories': typeof StoriesRoute
   '/terms': typeof TermsRoute
@@ -120,7 +136,9 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/how-to': typeof HowToRoute
   '/mp3': typeof Mp3Route
+  '/photos': typeof PhotosRoute
   '/privacy': typeof PrivacyRoute
+  '/result': typeof ResultRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stories': typeof StoriesRoute
   '/terms': typeof TermsRoute
@@ -136,7 +154,9 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/how-to'
     | '/mp3'
+    | '/photos'
     | '/privacy'
+    | '/result'
     | '/sitemap.xml'
     | '/stories'
     | '/terms'
@@ -150,7 +170,9 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/how-to'
     | '/mp3'
+    | '/photos'
     | '/privacy'
+    | '/result'
     | '/sitemap.xml'
     | '/stories'
     | '/terms'
@@ -164,7 +186,9 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/how-to'
     | '/mp3'
+    | '/photos'
     | '/privacy'
+    | '/result'
     | '/sitemap.xml'
     | '/stories'
     | '/terms'
@@ -179,7 +203,9 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   HowToRoute: typeof HowToRoute
   Mp3Route: typeof Mp3Route
+  PhotosRoute: typeof PhotosRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResultRoute: typeof ResultRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StoriesRoute: typeof StoriesRoute
   TermsRoute: typeof TermsRoute
@@ -209,11 +235,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/result': {
+      id: '/result'
+      path: '/result'
+      fullPath: '/result'
+      preLoaderRoute: typeof ResultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/photos': {
+      id: '/photos'
+      path: '/photos'
+      fullPath: '/photos'
+      preLoaderRoute: typeof PhotosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mp3': {
@@ -283,7 +323,9 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   HowToRoute: HowToRoute,
   Mp3Route: Mp3Route,
+  PhotosRoute: PhotosRoute,
   PrivacyRoute: PrivacyRoute,
+  ResultRoute: ResultRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StoriesRoute: StoriesRoute,
   TermsRoute: TermsRoute,
@@ -292,3 +334,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
