@@ -68,6 +68,12 @@ export function DownloaderForm({
       clearTimeout(t);
     };
   }, [url, mode]);
+  const stopProgress = () => {
+    if (progressTimer.current) {
+      clearInterval(progressTimer.current);
+      progressTimer.current = null;
+    }
+  };
   const startProgress = () => {
     setProgress(8);
     stopProgress();
