@@ -6,14 +6,14 @@ import { Smartphone, MonitorSmartphone, Zap, ShieldCheck, Globe, AppWindow } fro
 export const Route = createFileRoute("/app")({
   head: () => ({
     meta: [
-      { title: "Install SnapTok App — TikTok Downloader for Mobile & Desktop" },
+      { title: "Install StashTik App — TikTok Downloader for Mobile & Desktop" },
       {
         name: "description",
         content:
-          "Install SnapTok as a free Progressive Web App on iOS, Android, Windows, and macOS. Native apps and a browser extension are coming soon.",
+          "Install StashTik as a free Progressive Web App on iOS, Android, Windows, and macOS. Native apps and a browser extension are coming soon.",
       },
-      { property: "og:title", content: "Install SnapTok App" },
-      { property: "og:description", content: "Add SnapTok to your home screen for one-tap access." },
+      { property: "og:title", content: "Install StashTik App" },
+      { property: "og:description", content: "Add StashTik to your home screen for one-tap access." },
     ],
   }),
   component: AppPage,
@@ -23,8 +23,8 @@ function AppPage() {
   return (
     <SiteLayout>
       <PageHero
-        title={<>Get the <span className="text-brand-gradient">SnapTok App</span></>}
-        description="Add SnapTok to your home screen and use it like a native app — lightning fast."
+        title={<>Get the <span className="text-brand-gradient">StashTik App</span></>}
+        description="Add StashTik to your home screen and use it like a native app — lightning fast."
       />
 
       <section className="container mx-auto max-w-4xl px-4 pb-6">
@@ -32,7 +32,7 @@ function AppPage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-brand-gradient">Heads up</p>
           <h2 className="mt-1 text-xl font-bold">Native apps & browser extension — coming soon</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            We're building dedicated SnapTok experiences across every platform. Until they launch, install the web
+            We're building dedicated StashTik experiences across every platform. Until they launch, install the web
             app below for the smoothest experience.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -49,21 +49,21 @@ function AppPage() {
             <ol className="ml-4 list-decimal space-y-1 text-sm text-muted-foreground">
               <li>Tap the Share button in Safari.</li>
               <li>Scroll and tap <strong>Add to Home Screen</strong>.</li>
-              <li>Confirm to install SnapTok as an app.</li>
+              <li>Confirm to install StashTik as an app.</li>
             </ol>
           </Card>
           <Card icon={<Smartphone />} title="On Android (Chrome)">
             <ol className="ml-4 list-decimal space-y-1 text-sm text-muted-foreground">
               <li>Tap the menu (⋮) in Chrome.</li>
               <li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
-              <li>Open SnapTok from your home screen.</li>
+              <li>Open StashTik from your home screen.</li>
             </ol>
           </Card>
           <Card icon={<MonitorSmartphone />} title="On Desktop (Chrome / Edge)">
             <ol className="ml-4 list-decimal space-y-1 text-sm text-muted-foreground">
               <li>Click the install icon in the address bar.</li>
               <li>Confirm <strong>Install</strong>.</li>
-              <li>Launch SnapTok from your dock or start menu.</li>
+              <li>Launch StashTik from your dock or start menu.</li>
             </ol>
           </Card>
           <Card icon={<Zap />} title="Why install?">
@@ -78,7 +78,7 @@ function AppPage() {
         <div className="mt-8 flex items-start gap-3 rounded-2xl border border-border bg-secondary/40 p-5 text-sm text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-5 w-5 flex-none text-foreground" />
           <p>
-            SnapTok is a web app — no APK, no third-party store, no permissions beyond your browser. Installing
+            StashTik is a web app — no APK, no third-party store, no permissions beyond your browser. Installing
             just creates a shortcut so the site behaves like a standalone app.
           </p>
         </div>

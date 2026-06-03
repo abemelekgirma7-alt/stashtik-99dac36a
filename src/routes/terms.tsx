@@ -5,8 +5,8 @@ import { LegalPage } from "@/components/LegalPage";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service | SnapTok" },
-      { name: "description", content: "Terms and conditions governing your use of SnapTok." },
+      { title: "Terms of Service | StashTik" },
+      { name: "description", content: "Terms and conditions governing your use of StashTik." },
     ],
   }),
   component: () => (
@@ -14,9 +14,9 @@ export const Route = createFileRoute("/terms")({
       <LegalPage title="Terms of Service" updated="January 2026">
         <p>
           These Terms of Service ("Terms") constitute a legally binding agreement between you ("you", "User", or
-          "End User") and SnapTok ("SnapTok", "we", "us", or "our") governing your access to and use of the
-          website located at snaptok.app and any related services, features, content, or applications offered by
-          SnapTok (collectively, the "Service"). By accessing or using the Service, you represent that you have
+          "End User") and StashTik ("StashTik", "we", "us", or "our") governing your access to and use of the
+          website located at stashtik.app and any related services, features, content, or applications offered by
+          StashTik (collectively, the "Service"). By accessing or using the Service, you represent that you have
           read, understood, and agree to be bound by these Terms in their entirety. If you do not agree to any
           provision hereof, you must not access or use the Service.
         </p>
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/terms")({
 
         <h2>2. No Affiliation with TikTok</h2>
         <p>
-          The Service is operated independently. SnapTok is not affiliated with, endorsed by, sponsored by, or
+          The Service is operated independently. StashTik is not affiliated with, endorsed by, sponsored by, or
           connected to TikTok Inc., ByteDance Ltd., Douyin, or any of their parents, subsidiaries, or affiliates.
           All product names, logos, trademarks, and service marks referenced on the Service are the property of
           their respective owners. Use of such marks does not imply any affiliation with or endorsement by the
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/terms")({
 
         <h2>4. License Grant</h2>
         <p>
-          Subject to your continuing compliance with these Terms, SnapTok grants you a limited, personal,
+          Subject to your continuing compliance with these Terms, StashTik grants you a limited, personal,
           non-exclusive, non-transferable, non-sublicensable, revocable license to access and use the Service
           solely for your own personal, non-commercial purposes. All rights not expressly granted herein are
           reserved.
@@ -120,7 +120,7 @@ export const Route = createFileRoute("/terms")({
 
         <h2>9. Indemnification</h2>
         <p>
-          You agree to defend, indemnify, and hold harmless SnapTok and its affiliates, officers, directors,
+          You agree to defend, indemnify, and hold harmless StashTik and its affiliates, officers, directors,
           employees, and agents from and against any and all claims, damages, obligations, losses, liabilities,
           costs, or debt, and expenses (including but not limited to reasonable attorneys' fees) arising out of
           or relating to (a) your use of the Service; (b) your violation of these Terms; or (c) your violation
@@ -149,7 +149,7 @@ export const Route = createFileRoute("/terms")({
         <h2>12. Governing Law; Severability</h2>
         <p>
           These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in
-          which SnapTok is established, without regard to its conflict-of-laws provisions. If any provision of
+          which StashTik is established, without regard to its conflict-of-laws provisions. If any provision of
           these Terms is held by a court of competent jurisdiction to be invalid, illegal, or unenforceable, the
           remaining provisions shall remain in full force and effect.
         </p>
@@ -157,7 +157,7 @@ export const Route = createFileRoute("/terms")({
         <h2>13. Entire Agreement</h2>
         <p>
           These Terms, together with the <a href="/privacy">Privacy Policy</a> and the
-          <a href="/cookies"> Cookie Policy</a>, constitute the entire agreement between you and SnapTok with
+          <a href="/cookies"> Cookie Policy</a>, constitute the entire agreement between you and StashTik with
           respect to the Service, and supersede all prior or contemporaneous communications, proposals, and
           agreements, whether oral or written.
         </p>

@@ -7,10 +7,10 @@ import illustrationVideo from "@/assets/illustration-video.png";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About SnapTok — Free TikTok Downloader" },
-      { name: "description", content: "Learn about SnapTok, our mission, and what's coming next." },
-      { property: "og:title", content: "About SnapTok" },
-      { property: "og:description", content: "Who we are and what SnapTok does." },
+      { title: "About StashTik — Free TikTok Downloader" },
+      { name: "description", content: "Learn about StashTik, our mission, and what's coming next." },
+      { property: "og:title", content: "About StashTik" },
+      { property: "og:description", content: "Who we are and what StashTik does." },
     ],
   }),
   component: About,
@@ -21,21 +21,21 @@ function About() {
     <SiteLayout>
       <PageHero
         illustration={illustrationVideo}
-        title={<>About <span className="text-brand-gradient">SnapTok</span></>}
+        title={<>About <span className="text-brand-gradient">StashTik</span></>}
         description="A tiny, independent team building the friendliest TikTok downloader on the web."
       />
       <section className="container mx-auto max-w-3xl space-y-5 px-4 pb-10 text-muted-foreground">
         <p>
-          SnapTok is a free online tool that helps people save TikTok videos, stories, and audio for offline
+          StashTik is a free online tool that helps people save TikTok videos, stories, and audio for offline
           viewing. We believe great content should be easy to keep, share with friends, and remix — within the
           limits of the original creator's rights.
         </p>
         <p>
-          We built SnapTok to be the fastest, cleanest, and most privacy-friendly TikTok downloader on the web.
+          We built StashTik to be the fastest, cleanest, and most privacy-friendly TikTok downloader on the web.
           No accounts, no tracking, no ads inside your downloads.
         </p>
         <p>
-          SnapTok is not affiliated with TikTok, ByteDance, or Douyin. All trademarks belong to their respective
+          StashTik is not affiliated with TikTok, ByteDance, or Douyin. All trademarks belong to their respective
           owners. If you're a creator and want a video removed,
           reach out via our <Link to="/contact" className="text-foreground underline">contact page</Link>.
         </p>
@@ -45,7 +45,7 @@ function About() {
         <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
           <h2 className="text-xl font-bold">Coming soon: native app & browser extension</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            We're working on dedicated SnapTok apps so you can save TikToks even faster.
+            We're working on dedicated StashTik apps so you can save TikToks even faster.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <SoonCard icon={<Globe />} label="Web Extension" sub="Chrome, Edge, Brave, Firefox" />

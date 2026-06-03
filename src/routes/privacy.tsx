@@ -5,18 +5,18 @@ import { LegalPage } from "@/components/LegalPage";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy | SnapTok" },
-      { name: "description", content: "How SnapTok handles your data and privacy." },
+      { title: "Privacy Policy | StashTik" },
+      { name: "description", content: "How StashTik handles your data and privacy." },
     ],
   }),
   component: () => (
     <SiteLayout>
       <LegalPage title="Privacy Policy" updated="January 2026">
         <p>
-          This Privacy Policy ("Policy") describes the practices of SnapTok ("SnapTok", "we", "us", or "our")
+          This Privacy Policy ("Policy") describes the practices of StashTik ("StashTik", "we", "us", or "our")
           regarding the collection, use, disclosure, retention, and protection of information in connection with
-          your use of the website located at snaptok.app and any related services, features, content, or
-          applications offered by SnapTok (collectively, the "Service"). By accessing or using the Service, you
+          your use of the website located at stashtik.app and any related services, features, content, or
+          applications offered by StashTik (collectively, the "Service"). By accessing or using the Service, you
           acknowledge that you have read, understood, and agree to be bound by the terms set forth herein.
         </p>
 

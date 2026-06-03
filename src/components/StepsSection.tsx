@@ -5,7 +5,7 @@ import step4 from "@/assets/step-4-save.png";
 
 const steps = [
   { title: "Copy TikTok link", desc: "Open the TikTok app, tap Share, and choose Copy Link.", img: step1 },
-  { title: "Paste the URL", desc: "Paste the link into the search bar above on SnapTok.", img: step2 },
+  { title: "Paste the URL", desc: "Paste the link into the search bar above on StashTik.", img: step2 },
   { title: "Auto-process", desc: "As soon as we detect a valid link, we start fetching — no extra clicks.", img: step3 },
   { title: "Save the file", desc: "Tap Download to keep your no-watermark HD video, story, or MP3.", img: step4 },
 ];

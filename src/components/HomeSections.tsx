@@ -20,9 +20,9 @@ export function HomeSections() {
     <>
       <section className="container mx-auto px-4 py-16">
         <SectionHeading
-          eyebrow="What is SnapTok?"
+          eyebrow="What is StashTik?"
           title="The fastest TikTok downloader on the web"
-          description="SnapTok is a free online TikTok downloader that saves videos in HD MP4 without watermark. Works on iOS, Android, Windows, and macOS — just paste the URL."
+          description="StashTik is a free online TikTok downloader that saves videos in HD MP4 without watermark. Works on iOS, Android, Windows, and macOS — just paste the URL."
         />
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3">
           <Feature icon={<Zap />} title="Fast & Free Downloads" desc="Grab HD clips in seconds. No registration, no apps, no hidden costs." />
@@ -40,7 +40,7 @@ export function HomeSections() {
         <SectionHeading
           eyebrow="FAQ"
           title="Frequently asked questions"
-          description="Quick answers about SnapTok and our TikTok tools."
+          description="Quick answers about StashTik and our TikTok tools."
         />
         <div className="mx-auto mt-8 max-w-3xl">
           <Accordion type="single" collapsible className="rounded-2xl border border-border bg-card px-2 shadow-soft">
@@ -82,15 +82,15 @@ function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; 
 const faqs = [
   {
     q: "How can I download TikTok videos without a watermark?",
-    a: "Paste your TikTok link into SnapTok. We automatically strip the TikTok watermark and serve a clean HD MP4 ready to share or repost.",
+    a: "Paste your TikTok link into StashTik. We automatically strip the TikTok watermark and serve a clean HD MP4 ready to share or repost.",
   },
   {
-    q: "Is SnapTok safe and secure?",
+    q: "Is StashTik safe and secure?",
     a: "Yes. We never ask for your TikTok login, we don't store any of the videos you download, and the entire process happens through your browser.",
   },
   {
     q: "Does it work on iPhone, Android, and PC?",
-    a: "SnapTok is a web app that works in every modern browser — iOS Safari, Android Chrome, Windows, and macOS. No installation required.",
+    a: "StashTik is a web app that works in every modern browser — iOS Safari, Android Chrome, Windows, and macOS. No installation required.",
   },
   {
     q: "Is it free? Are there any limits?",
@@ -102,6 +102,6 @@ const faqs = [
   },
   {
     q: "Can I reuse or repost downloaded TikTok videos?",
-    a: "Only if you have the rights. SnapTok is for personal use; always respect the original creator and TikTok's terms.",
+    a: "Only if you have the rights. StashTik is for personal use; always respect the original creator and TikTok's terms.",
   },
 ];

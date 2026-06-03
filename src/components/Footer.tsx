@@ -30,7 +30,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-muted-foreground md:flex-row">
-          <p>© {new Date().getFullYear()} SnapTok. Not affiliated with TikTok or ByteDance.</p>
+          <p>© {new Date().getFullYear()} StashTik. Not affiliated with TikTok or ByteDance.</p>
           <p>For personal, non-commercial use only.</p>
         </div>
       </div>
