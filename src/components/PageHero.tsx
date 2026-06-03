@@ -31,8 +31,8 @@ export function PageHero({
             {eyebrow}
           </span>
         )}
-        <h1 className="mx-auto mt-2 flex max-w-4xl flex-wrap items-center justify-center gap-x-3 gap-y-1 text-2xl font-bold leading-tight animate-fade-up sm:text-3xl md:text-5xl">
-          {withLogo && <LogoMark className="h-9 w-9 sm:h-11 sm:w-11 md:h-14 md:w-14" />}
+        <h1 className="mx-auto mt-2 flex max-w-4xl flex-col items-center justify-center gap-2 text-xl font-bold leading-tight animate-fade-up sm:text-2xl md:text-4xl">
+          {withLogo && <LogoMark className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14" />}
           <span>{title}</span>
         </h1>
         {description && (
