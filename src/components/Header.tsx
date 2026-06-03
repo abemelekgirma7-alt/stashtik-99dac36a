@@ -19,12 +19,12 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Logo />
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-2 md:flex lg:gap-3">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-3 lg:py-2 lg:text-sm"
               activeProps={{ className: "text-foreground bg-secondary" }}
               activeOptions={{ exact: n.to === "/" }}
             >
@@ -36,7 +36,7 @@ export function Header() {
           <ThemeToggle />
           <Link
             to="/app"
-            className="relative hidden rounded-full bg-brand-gradient px-4 py-2 text-sm font-semibold text-white shadow-brand transition-transform hover:scale-105 md:inline-flex"
+            className="relative hidden rounded-full bg-brand-gradient px-3 py-1.5 text-xs font-semibold text-white shadow-brand transition-transform hover:scale-105 md:inline-flex lg:px-4 lg:py-2 lg:text-sm"
           >
             Install App
             <span className="ml-2 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
