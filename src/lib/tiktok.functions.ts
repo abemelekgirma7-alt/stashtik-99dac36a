@@ -100,13 +100,17 @@ export const fetchTikTok = createServerFn({ method: "POST" })
         };
       }
 
+      // Watermark-free fallback chain: prefer `play` (no watermark), then `hdplay`,
+      // and only fall back to the watermarked `wmplay` if both are missing so the
+      // user always gets *something* to download.
+      const noWatermark = d.play || d.hdplay || d.wmplay || "";
       return {
         ok: true,
         title: (d.title ?? "TikTok video").trim() || "TikTok video",
         author: d.author?.nickname ?? d.author?.unique_id ?? "Unknown",
         cover: d.cover ?? "",
         duration: d.duration ?? 0,
-        videoNoWatermark: d.play ?? "",
+        videoNoWatermark: noWatermark,
         videoWatermark: d.wmplay ?? "",
         videoHd: d.hdplay,
         audio: d.music ?? "",
