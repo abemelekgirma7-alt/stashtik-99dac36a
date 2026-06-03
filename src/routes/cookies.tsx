@@ -5,17 +5,17 @@ import { LegalPage } from "@/components/LegalPage";
 export const Route = createFileRoute("/cookies")({
   head: () => ({
     meta: [
-      { title: "Cookie Policy | SnapTok" },
-      { name: "description", content: "How SnapTok uses cookies and similar technologies." },
+      { title: "Cookie Policy | StashTik" },
+      { name: "description", content: "How StashTik uses cookies and similar technologies." },
     ],
   }),
   component: () => (
     <SiteLayout>
       <LegalPage title="Cookie Policy" updated="January 2026">
         <p>
-          This Cookie Policy ("Policy") explains how SnapTok ("SnapTok", "we", "us", or "our") uses cookies, local
+          This Cookie Policy ("Policy") explains how StashTik ("StashTik", "we", "us", or "our") uses cookies, local
           storage, and similar tracking technologies (collectively, "Cookies") in connection with the website
-          located at snaptok.app (the "Service"). This Policy should be read together with our
+          located at stashtik.app (the "Service"). This Policy should be read together with our
           <a href="/privacy"> Privacy Policy</a>.
         </p>
 

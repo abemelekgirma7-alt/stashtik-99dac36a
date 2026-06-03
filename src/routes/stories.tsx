@@ -8,13 +8,13 @@ import illustrationStories from "@/assets/illustration-stories.png";
 export const Route = createFileRoute("/stories")({
   head: () => ({
     meta: [
-      { title: "TikTok Story Downloader — Save Stories Without Watermark | SnapTok" },
+      { title: "TikTok Story Downloader — Save Stories Without Watermark | StashTik" },
       {
         name: "description",
         content:
           "Download public TikTok stories — videos and photos — without watermark. Paste the story link and save instantly. Free and unlimited.",
       },
-      { property: "og:title", content: "TikTok Story Downloader — SnapTok" },
+      { property: "og:title", content: "TikTok Story Downloader — StashTik" },
       { property: "og:description", content: "Save public TikTok stories without watermark." },
     ],
   }),

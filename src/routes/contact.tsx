@@ -10,8 +10,8 @@ const CONTACT_EMAIL = "abimelekgirma@gmail.com";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact SnapTok" },
-      { name: "description", content: "Get in touch with the SnapTok team." },
+      { title: "Contact StashTik" },
+      { name: "description", content: "Get in touch with the StashTik team." },
     ],
   }),
   component: Contact,
@@ -47,7 +47,7 @@ function Contact() {
 
     // Open the user's email client with a pre-filled message addressed to us.
     const { name, email, message } = parsed.data;
-    const subject = `SnapTok contact from ${name}`;
+    const subject = `StashTik contact from ${name}`;
     const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
     const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;

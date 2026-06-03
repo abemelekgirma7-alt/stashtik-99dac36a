@@ -1,6 +1,6 @@
 {
-  "name": "SnapTok — TikTok Downloader",
-  "short_name": "SnapTok",
+  "name": "StashTik — TikTok Downloader",
+  "short_name": "StashTik",
   "description": "Download TikTok videos without watermark, stories, and MP3 audio.",
   "start_url": "/",
   "display": "standalone",

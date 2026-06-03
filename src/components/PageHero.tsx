@@ -1,16 +1,18 @@
 import type { ReactNode } from "react";
+import { LogoMark } from "./Logo";
 
 export function PageHero({
   eyebrow,
   title,
   description,
-  illustration: _illustration,
+  withLogo,
   children,
 }: {
   eyebrow?: string;
   title: ReactNode;
   description?: ReactNode;
   illustration?: string;
+  withLogo?: boolean;
   children?: ReactNode;
 }) {
   return (
@@ -29,7 +31,10 @@ export function PageHero({
             {eyebrow}
           </span>
         )}
-        <h1 className="mx-auto mt-2 max-w-4xl text-2xl font-bold leading-tight animate-fade-up sm:text-3xl md:text-5xl">{title}</h1>
+        <h1 className="mx-auto mt-2 flex max-w-4xl flex-wrap items-center justify-center gap-x-3 gap-y-1 text-2xl font-bold leading-tight animate-fade-up sm:text-3xl md:text-5xl">
+          {withLogo && <LogoMark className="h-9 w-9 sm:h-11 sm:w-11 md:h-14 md:w-14" />}
+          <span>{title}</span>
+        </h1>
         {description && (
           <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base md:text-lg">{description}</p>
         )}

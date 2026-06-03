@@ -8,13 +8,13 @@ import illustrationAudio from "@/assets/illustration-audio.png";
 export const Route = createFileRoute("/mp3")({
   head: () => ({
     meta: [
-      { title: "TikTok Audio Downloader — Save TikTok MP3 Free | SnapTok" },
+      { title: "TikTok Audio Downloader — Save TikTok MP3 Free | StashTik" },
       {
         name: "description",
         content:
           "Download the audio from any TikTok video as a high-quality MP3 file. Free, fast, and works in your browser — no conversion needed.",
       },
-      { property: "og:title", content: "TikTok MP3 Downloader — SnapTok" },
+      { property: "og:title", content: "TikTok MP3 Downloader — StashTik" },
       { property: "og:description", content: "Download TikTok audio as MP3 instantly." },
     ],
   }),
@@ -39,7 +39,7 @@ function Mp3() {
       <section className="container mx-auto max-w-3xl px-4 py-12">
         <h2 className="text-2xl font-bold">About TikTok audio downloads</h2>
         <p className="mt-3 text-muted-foreground">
-          SnapTok grabs the original audio track from any TikTok and saves it as an MP3 — no re-encoding, no quality loss.
+          StashTik grabs the original audio track from any TikTok and saves it as an MP3 — no re-encoding, no quality loss.
           Perfect for sounds, music snippets, voiceovers, and trending audio clips for personal use. It's a downloader,
           not a converter — even if you paste a video link, only the audio is saved.
         </p>
