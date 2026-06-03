@@ -4,18 +4,17 @@ import { PageHero } from "@/components/PageHero";
 import { DownloaderForm } from "@/components/DownloaderForm";
 import { HomeSections } from "@/components/HomeSections";
 import { Music, Image as ImageIcon, Sparkles, Smartphone } from "lucide-react";
-import illustrationVideo from "@/assets/illustration-video.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SnapTok — TikTok Video Downloader Without Watermark (HD, MP4, MP3)" },
+      { title: "Tiktok Downloader - Download Video tiktok Without Watermark" },
       {
         name: "description",
         content:
           "Free TikTok downloader. Save TikTok videos without watermark in HD MP4, extract MP3 audio, and download TikTok stories. No login, unlimited, works on any device.",
       },
-      { property: "og:title", content: "SnapTok — Download TikTok Without Watermark" },
+      { property: "og:title", content: "Tiktok Downloader - Download Video tiktok Without Watermark" },
       { property: "og:description", content: "HD MP4, MP3 audio, and stories. Free and unlimited." },
     ],
   }),
@@ -26,7 +25,6 @@ function Home() {
   return (
     <SiteLayout>
       <PageHero
-        illustration={illustrationVideo}
         title={
           <>
             Download TikTok Videos{" "}
@@ -45,12 +43,8 @@ function Home() {
           <QuickLink to="/app" icon={<Smartphone className="h-3 w-3" />}>Install App</QuickLink>
         </div>
 
-        <div
-          data-ad-slot="hero-below"
-          className="mx-auto mt-4 flex min-h-[90px] max-w-2xl items-center justify-center rounded-xl border border-dashed border-border bg-secondary/40 text-[11px] uppercase tracking-wider text-muted-foreground"
-        >
-          Ad space
-        </div>
+        {/* Reserved blank space for a manually-inserted ad (do not remove) */}
+        <div data-ad-slot="hero-below" className="mx-auto mt-4 min-h-[90px] max-w-2xl" />
       </PageHero>
 
       <HomeSections />
