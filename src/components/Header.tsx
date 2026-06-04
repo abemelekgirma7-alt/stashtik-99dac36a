@@ -17,14 +17,14 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-14 items-center justify-between gap-2 px-3 sm:h-16 sm:px-4">
         <Logo />
-        <nav className="hidden items-center gap-2 md:flex lg:gap-3">
+        <nav className="hidden items-center gap-0.5 md:flex lg:gap-2">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-3 lg:py-2 lg:text-sm"
+              className="rounded-lg px-2 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-3 lg:py-2 lg:text-sm"
               activeProps={{ className: "text-foreground bg-secondary" }}
               activeOptions={{ exact: n.to === "/" }}
             >
@@ -32,14 +32,14 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <ThemeToggle />
           <Link
             to="/app"
-            className="relative hidden rounded-full bg-brand-gradient px-3 py-1.5 text-xs font-semibold text-white shadow-brand transition-transform hover:scale-105 md:inline-flex lg:px-4 lg:py-2 lg:text-sm"
+            className="relative hidden rounded-full bg-brand-gradient px-2.5 py-1 text-[11px] font-semibold text-white shadow-brand transition-transform hover:scale-105 lg:inline-flex lg:px-4 lg:py-2 lg:text-sm"
           >
-            Install App
-            <span className="ml-2 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+            Install
+            <span className="ml-1.5 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
               Soon
             </span>
           </Link>
