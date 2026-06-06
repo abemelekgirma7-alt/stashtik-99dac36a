@@ -76,7 +76,10 @@ function AppPage() {
         </div>
 
         <div className="mt-8 flex items-start gap-3 rounded-2xl border border-border bg-secondary/40 p-5 text-sm text-muted-foreground">
-          <ShieldCheck className="mt-0.5 h-5 w-5 flex-none text-foreground" />
+          <span className="relative mt-0.5 inline-flex h-9 w-9 flex-none items-center justify-center">
+            <span aria-hidden className="absolute inset-0 rounded-full bg-brand-gradient opacity-40 blur-md" />
+            <ShieldCheck className="relative h-5 w-5 text-brand-gradient" style={{ color: "oklch(0.66 0.27 5)" }} />
+          </span>
           <p>
             StashTik is a web app — no APK, no third-party store, no permissions beyond your browser. Installing
             just creates a shortcut so the site behaves like a standalone app.
