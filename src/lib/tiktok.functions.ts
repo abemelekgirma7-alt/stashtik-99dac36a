@@ -82,7 +82,7 @@ export const fetchTikTok = createServerFn({ method: "POST" })
               duration: md.duration ?? 0,
               videoNoWatermark: "",
               videoWatermark: "",
-              audio: md.play,
+              audio: md.play!,
             };
           }
           return { ok: false, error: friendlyMessage(mj.msg) };
