@@ -26,6 +26,7 @@ function Mp3() {
     <SiteLayout>
       <PageHero
         withLogo
+        showModeTabs
         illustration={illustrationAudio}
         title={
           <>

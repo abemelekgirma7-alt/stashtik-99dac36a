@@ -25,6 +25,7 @@ function Home() {
     <SiteLayout>
       <PageHero
         withLogo
+        showModeTabs
         title={
           <>
             Download TikTok <span className="text-brand-gradient">Without Watermark</span>

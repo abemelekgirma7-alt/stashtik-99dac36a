@@ -26,6 +26,7 @@ function Stories() {
     <SiteLayout>
       <PageHero
         withLogo
+        showModeTabs
         illustration={illustrationStories}
         title={
           <>
