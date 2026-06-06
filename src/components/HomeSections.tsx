@@ -51,14 +51,15 @@ export function HomeSections() {
           <div className="flex-1">
             <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
               <Smartphone className="h-3 w-3" /> Install App
+              <span className="ml-1 rounded-full bg-white/30 px-1.5 py-0.5 text-[9px]">Coming soon</span>
             </span>
             <h3 className="mt-2 text-xl font-bold sm:text-2xl md:text-3xl">Get StashTik on your home screen</h3>
             <p className="mt-1 text-sm text-white/85 sm:text-base">
-              One-tap launch on iPhone, Android, and desktop. Free, fast, no app store needed.
+              Native iOS, Android, and desktop apps are on the way — install the web app today for one-tap launch.
             </p>
           </div>
           <span className="inline-flex flex-none items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-foreground shadow-soft transition-transform group-hover:translate-x-1">
-            Install now <ArrowRight className="h-4 w-4" />
+            Learn more <ArrowRight className="h-4 w-4" />
           </span>
         </Link>
       </section>

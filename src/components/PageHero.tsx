@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 import { LogoMark } from "./Logo";
+import { ModeTabs } from "./ModeTabs";
 
 export function PageHero({
   eyebrow,
   title,
   description,
   withLogo,
+  showModeTabs,
   children,
 }: {
   eyebrow?: string;
@@ -13,6 +15,7 @@ export function PageHero({
   description?: ReactNode;
   illustration?: string;
   withLogo?: boolean;
+  showModeTabs?: boolean;
   children?: ReactNode;
 }) {
   return (
@@ -35,6 +38,7 @@ export function PageHero({
           {withLogo && <LogoMark className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14" />}
           <span>{title}</span>
         </h1>
+        {showModeTabs && <ModeTabs />}
         {description && (
           <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base md:text-lg">{description}</p>
         )}
