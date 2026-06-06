@@ -115,7 +115,39 @@ export function ResultCard({
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft animate-fade-up">
       <div className="grid gap-4 p-3 sm:grid-cols-[200px_1fr] sm:gap-5 sm:p-5 md:grid-cols-[240px_1fr]">
-        {!hasImages && mode !== "mp3" && result.videoNoWatermark ? (
+        {hasImages ? (
+          <div className="relative mx-auto sm:mx-0">
+            <img
+              src={currentImg}
+              alt={`${result.title} — ${imgIdx + 1}`}
+              className="aspect-[9/14] w-40 rounded-xl object-cover sm:w-[200px] md:w-[240px]"
+              loading="lazy"
+            />
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setImgIdx((i) => (i - 1 + images.length) % images.length)}
+                  aria-label="Previous image"
+                  className="absolute left-1 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImgIdx((i) => (i + 1) % images.length)}
+                  aria-label="Next image"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
+                  {imgIdx + 1} / {images.length}
+                </span>
+              </>
+            )}
+          </div>
+        ) : mode !== "mp3" && result.videoNoWatermark ? (
           <div className="mx-auto sm:mx-0">
             <video
               src={result.videoNoWatermark}
