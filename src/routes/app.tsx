@@ -44,7 +44,7 @@ function AppPage() {
       </section>
 
       <section className="container mx-auto max-w-4xl px-4 pb-12">
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6">
           <Card icon={<Smartphone />} title="On iPhone (Safari)">
             <ol className="ml-4 list-decimal space-y-1 text-sm text-muted-foreground">
               <li>Tap the Share button in Safari.</li>
