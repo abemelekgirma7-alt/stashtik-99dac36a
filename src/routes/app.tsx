@@ -35,7 +35,7 @@ function AppPage() {
             We're building dedicated StashTik experiences across every platform. Until they launch, install the web
             app below for the smoothest experience.
           </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3">
             <SoonCard icon={<Globe />} label="Browser Extension" sub="Chrome, Edge, Brave, Firefox" />
             <SoonCard icon={<Smartphone />} label="iOS App" sub="iPhone & iPad" />
             <SoonCard icon={<AppWindow />} label="Android App" sub="Phones & tablets" />
@@ -44,7 +44,7 @@ function AppPage() {
       </section>
 
       <section className="container mx-auto max-w-4xl px-4 pb-12">
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6">
           <Card icon={<Smartphone />} title="On iPhone (Safari)">
             <ol className="ml-4 list-decimal space-y-1 text-sm text-muted-foreground">
               <li>Tap the Share button in Safari.</li>
@@ -76,7 +76,10 @@ function AppPage() {
         </div>
 
         <div className="mt-8 flex items-start gap-3 rounded-2xl border border-border bg-secondary/40 p-5 text-sm text-muted-foreground">
-          <ShieldCheck className="mt-0.5 h-5 w-5 flex-none text-foreground" />
+          <span className="relative mt-0.5 inline-flex h-9 w-9 flex-none items-center justify-center">
+            <span aria-hidden className="absolute inset-0 rounded-full bg-brand-gradient opacity-40 blur-md" />
+            <ShieldCheck className="relative h-5 w-5 text-brand-gradient" style={{ color: "oklch(0.66 0.27 5)" }} />
+          </span>
           <p>
             StashTik is a web app — no APK, no third-party store, no permissions beyond your browser. Installing
             just creates a shortcut so the site behaves like a standalone app.

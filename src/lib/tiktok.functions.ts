@@ -54,6 +54,41 @@ export const fetchTikTok = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }): Promise<TikTokResult> => {
     try {
+      const isMusicUrl = /tiktok\.com\/music\//i.test(data.url);
+
+      if (isMusicUrl) {
+        const mres = await fetch("https://www.tikwm.com/api/music/info", {
+          method: "POST",
+          headers: {
+            "content-type": "application/x-www-form-urlencoded",
+            "user-agent":
+              "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+          },
+          body: new URLSearchParams({ url: data.url }).toString(),
+        });
+        if (mres.ok) {
+          const mj = (await mres.json()) as {
+            code: number;
+            msg?: string;
+            data?: { title?: string; play?: string; cover?: string; duration?: number; author?: string };
+          };
+          if (mj.code === 0 && mj.data?.play) {
+            const md = mj.data;
+            return {
+              ok: true,
+              title: (md.title ?? "TikTok audio").trim() || "TikTok audio",
+              author: md.author ?? "TikTok",
+              cover: md.cover ?? "",
+              duration: md.duration ?? 0,
+              videoNoWatermark: "",
+              videoWatermark: "",
+              audio: md.play!,
+            };
+          }
+          return { ok: false, error: friendlyMessage(mj.msg) };
+        }
+      }
+
       const res = await fetch("https://www.tikwm.com/api/", {
         method: "POST",
         headers: {
