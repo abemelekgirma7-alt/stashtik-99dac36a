@@ -35,7 +35,7 @@ function AppPage() {
             We're building dedicated StashTik experiences across every platform. Until they launch, install the web
             app below for the smoothest experience.
           </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3">
             <SoonCard icon={<Globe />} label="Browser Extension" sub="Chrome, Edge, Brave, Firefox" />
             <SoonCard icon={<Smartphone />} label="iOS App" sub="iPhone & iPad" />
             <SoonCard icon={<AppWindow />} label="Android App" sub="Phones & tablets" />
