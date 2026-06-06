@@ -21,7 +21,7 @@ export function makeFilename(title: string, ext: string) {
       .replace(/\s+/g, " ")
       .trim()
       .slice(0, 80) || "tiktok";
-  return `${clean}.${ext}`;
+  return `StashTik - ${clean}.${ext}`;
 }
 
 export function proxiedDownloadUrl(url: string, filename: string) {
