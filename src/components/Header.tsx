@@ -19,12 +19,12 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-14 items-center justify-between gap-2 px-3 sm:h-16 sm:px-4">
         <Logo />
-        <nav className="hidden items-center gap-0.5 md:flex lg:gap-2">
+        <nav className="hidden items-center gap-1 md:flex md:gap-1.5 lg:gap-2">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="rounded-lg px-2 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground lg:px-3 lg:py-2 lg:text-sm"
+              className="rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground md:text-[15px] lg:px-3 lg:text-base"
               activeProps={{ className: "text-foreground bg-secondary" }}
               activeOptions={{ exact: n.to === "/" }}
             >
