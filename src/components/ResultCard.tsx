@@ -8,6 +8,8 @@ import {
   Sparkles,
   PlayCircle,
   Package,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import JSZip from "jszip";
 import type { TikTokSuccess } from "@/lib/tiktok.functions";
