@@ -80,6 +80,9 @@ export function ResultCard({
 }) {
   const hasImages = result.images && result.images.length > 0;
   const [zipping, setZipping] = useState(false);
+  const [imgIdx, setImgIdx] = useState(0);
+  const images = result.images ?? [];
+  const currentImg = images[imgIdx];
 
   const downloadAllAsZip = async () => {
     if (!result.images?.length) return;
