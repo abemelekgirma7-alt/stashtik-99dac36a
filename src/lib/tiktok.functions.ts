@@ -61,6 +61,8 @@ const TIKWM_HOSTS = [
   "https://api.tikwm.com",
 ];
 
+const SLB_FALLBACK_ENDPOINT = "https://tdownv4.sl-bjs.workers.dev/";
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function isRateLimited(msg?: string) {
@@ -78,8 +80,9 @@ async function callTikwm(
   path: "/api/" | "/api/music/info",
   body: URLSearchParams,
 ): Promise<{ code: number; msg?: string; data?: any } | null> {
-  // Up to ~6 attempts spread across mirrors, with backoff on rate-limits.
-  const maxAttempts = 6;
+  // Try each mirror once first. If a mirror is protected by a web challenge,
+  // move on quickly instead of making the user wait through doomed retries.
+  const maxAttempts = TIKWM_HOSTS.length;
   let lastJson: { code: number; msg?: string; data?: any } | null = null;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -95,8 +98,9 @@ async function callTikwm(
       });
 
       if (!res.ok) {
+        if (res.status === 403 || res.status === 401) continue;
         // 429 or 5xx — back off and try next mirror.
-        await sleep(800 + attempt * 600);
+        await sleep(400 + attempt * 350);
         continue;
       }
 
@@ -107,7 +111,7 @@ async function callTikwm(
 
       if (isRateLimited(json.msg)) {
         // Wait longer the more we've retried (tikwm free tier is ~1 req/sec).
-        await sleep(1200 + attempt * 800);
+        await sleep(700 + attempt * 500);
         continue;
       }
 
@@ -118,6 +122,46 @@ async function callTikwm(
     }
   }
   return lastJson;
+}
+
+async function callSlbFallback(url: string): Promise<TikTokSuccess | null> {
+  try {
+    const res = await fetch(`${SLB_FALLBACK_ENDPOINT}?down=${encodeURIComponent(url)}`, {
+      headers: {
+        accept: "application/json,text/plain,*/*",
+        "user-agent": UA,
+      },
+    });
+
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      title?: string;
+      content_type?: string;
+      download_url?: string;
+      author?: {
+        username?: string;
+        nickname?: string;
+        avatar?: string;
+        duration?: number;
+        audio_url?: string;
+      };
+    };
+
+    if (!data.download_url && !data.author?.audio_url) return null;
+
+    return {
+      ok: true,
+      title: (data.title ?? "TikTok video").trim() || "TikTok video",
+      author: data.author?.nickname ?? data.author?.username ?? "TikTok",
+      cover: data.author?.avatar ?? "",
+      duration: data.author?.duration ?? 0,
+      videoNoWatermark: data.download_url ?? "",
+      videoWatermark: "",
+      audio: data.author?.audio_url ?? "",
+    };
+  } catch {
+    return null;
+  }
 }
 
 export const fetchTikTok = createServerFn({ method: "POST" })
@@ -153,14 +197,14 @@ export const fetchTikTok = createServerFn({ method: "POST" })
       );
 
       if (!json) {
-        return {
-          ok: false,
-          error:
-            "Our downloader is having trouble reaching TikTok right now. Please try again in a moment.",
-        };
+        const fallback = await callSlbFallback(data.url);
+        if (fallback) return fallback;
+        return { ok: false, error: "High demand right now — keep this page open and retry; StashTik will keep trying for you." };
       }
 
       if (json.code !== 0 || !json.data) {
+        const fallback = await callSlbFallback(data.url);
+        if (fallback) return fallback;
         return { ok: false, error: friendlyMessage(json.msg) };
       }
 
