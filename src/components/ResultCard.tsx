@@ -294,27 +294,27 @@ function DownloadBtn({
   fullWidth?: boolean;
   hdNote?: boolean;
 }) {
-  const [busy, setBusy] = useState(false);
   if (!url) return null;
   const href = proxiedDownloadUrl(url, filename);
-  const handleClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      await triggerDownload(href, filename);
-    } finally {
-      setBusy(false);
-    }
-  };
+  // Let the browser handle the download natively. The anchor has
+  // `download` + points to our same-origin proxy which sets
+  // Content-Disposition: attachment, so Chrome/Safari show their own
+  // download progress immediately — no "Preparing…" on our site.
+  const finalName = uniqueFilename(filename);
   const base =
     "inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-transform hover:scale-[1.01] active:scale-[0.99]";
   const variant = primary
     ? "bg-brand-gradient text-white shadow-brand"
     : "border border-border bg-card hover:bg-secondary";
   return (
-    <a href={href} onClick={handleClick} className={`${base} ${variant} ${fullWidth ? "w-full" : ""}`}>
-      {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : icon}
-      <span>{busy ? "Preparing…" : label}</span>
+    <a
+      href={href}
+      download={finalName}
+      rel="noopener"
+      className={`${base} ${variant} ${fullWidth ? "w-full" : ""}`}
+    >
+      {icon}
+      <span>{label}</span>
       {hdNote && (
         <Megaphone className="h-3 w-3 opacity-90" aria-label="Contains an ad" />
       )}
