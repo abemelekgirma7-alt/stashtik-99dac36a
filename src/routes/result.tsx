@@ -36,11 +36,16 @@ function ResultPage() {
   const progressTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const attemptRef = useRef(0);
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearProgress = () => {
     if (progressTimer.current) {
       clearInterval(progressTimer.current);
       progressTimer.current = null;
+    }
+    if (retryTimer.current) {
+      clearTimeout(retryTimer.current);
+      retryTimer.current = null;
     }
   };
 
@@ -83,6 +88,15 @@ function ResultPage() {
         const res = await fetchFn({ data: { url: u }, signal: ctrl.signal } as never);
         if (myAttempt !== attemptRef.current) return; // stale
         if (!res.ok) {
+          const transient = /trouble|demand|busy|rate|limit|moment|network|reaching/i.test(res.error);
+          if (transient) {
+            setStatus("High demand — still retrying for you…");
+            setProgress((p) => Math.max(p, 88));
+            retryTimer.current = setTimeout(() => {
+              if (myAttempt === attemptRef.current) startFetch();
+            }, 1800);
+            return;
+          }
           setError(res.error);
         } else {
           // Mode-specific validation.
