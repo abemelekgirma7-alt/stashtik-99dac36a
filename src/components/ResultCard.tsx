@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Loader2,
   Music,
@@ -11,7 +11,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Megaphone,
-  AlertTriangle,
 } from "lucide-react";
 import JSZip from "jszip";
 import type { TikTokSuccess } from "@/lib/tiktok.functions";
@@ -77,7 +76,7 @@ async function triggerDownload(url: string, filename: string) {
   }
 }
 
-const AD_DURATION = 30;
+
 
 export function ResultCard({
   result,
@@ -94,50 +93,7 @@ export function ResultCard({
   const images = result.images ?? [];
   const currentImg = images[imgIdx];
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [adOpen, setAdOpen] = useState(false);
-  const [adSeconds, setAdSeconds] = useState(AD_DURATION);
-  const [adError, setAdError] = useState<string | null>(null);
   const [hdStatus, setHdStatus] = useState<string | null>(null);
-  const pendingHd = useRef<null | { url: string; filename: string }>(null);
-
-  useEffect(() => {
-    if (!adOpen) return;
-    setAdSeconds(AD_DURATION);
-    setAdError(null);
-    const t = setInterval(() => {
-      setAdSeconds((s) => {
-        if (s <= 1) {
-          clearInterval(t);
-          return 0;
-        }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(t);
-  }, [adOpen]);
-
-  const requestHdWithAd = (url: string, filename: string) => {
-    pendingHd.current = { url, filename };
-    setHdStatus(null);
-    setAdOpen(true);
-  };
-
-  const finishHdDownload = async () => {
-    const p = pendingHd.current;
-    setAdOpen(false);
-    if (!p) return;
-    setHdStatus("Starting HD download…");
-    try {
-      const ok = await triggerDownload(proxiedDownloadUrl(p.url, p.filename), p.filename);
-      setHdStatus(ok ? "HD download started ✓" : "HD download opened in a new tab — long-press to save.");
-    } catch (err) {
-      console.error(err);
-      setHdStatus("HD download failed. Tap the SD option below as a fallback.");
-    } finally {
-      pendingHd.current = null;
-      setTimeout(() => setHdStatus(null), 6000);
-    }
-  };
 
   const downloadAllAsZip = async () => {
     if (!result.images?.length) return;
@@ -212,7 +168,7 @@ export function ResultCard({
               controlsList="nodownload"
               playsInline
               preload="metadata"
-              className="aspect-[9/16] w-40 rounded-xl bg-black object-cover sm:w-[200px] md:w-[240px]"
+              className="aspect-[9/16] w-40 rounded-xl bg-black object-contain sm:w-[200px] md:w-[240px]"
             />
             <p className="mt-1 text-center text-[10px] text-muted-foreground">
               Fullscreen &amp; Picture-in-Picture are in the player ⋯ menu
@@ -280,7 +236,7 @@ export function ResultCard({
                     primary
                     fullWidth
                     hdNote
-                    onAdRequest={requestHdWithAd}
+                    
                   />
                 )}
                 <DownloadBtn
@@ -318,47 +274,6 @@ export function ResultCard({
         </div>
       </div>
 
-      {adOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 animate-fade-in">
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-center shadow-soft">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-gradient text-white">
-              <Megaphone className="h-6 w-6" />
-            </div>
-            <h4 className="mt-3 text-base font-semibold">Watch a 30-second ad to unlock HD</h4>
-            <p className="mt-1 text-xs text-muted-foreground">
-              HD downloads are supported by a short sponsor message. Your download starts the moment the ad finishes.
-            </p>
-            <div className="mt-4 flex aspect-video items-center justify-center rounded-lg bg-black text-xs text-white/70">
-              Sponsored — your ad plays here ({AD_DURATION - adSeconds + 1}/{AD_DURATION}s)
-            </div>
-            {adError && (
-              <p className="mt-2 flex items-center justify-center gap-1 text-[11px] text-destructive">
-                <AlertTriangle className="h-3 w-3" /> {adError}
-              </p>
-            )}
-            <button
-              type="button"
-              disabled={adSeconds > 0}
-              onClick={finishHdDownload}
-              className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand-gradient px-3 py-2 text-xs font-semibold text-white shadow-brand disabled:opacity-60"
-            >
-              {adSeconds > 0 ? `Ad ends in ${adSeconds}s…` : "Continue HD download"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                pendingHd.current = null;
-                setAdOpen(false);
-                setHdStatus("HD download canceled. You can still grab the free SD version below.");
-                setTimeout(() => setHdStatus(null), 5000);
-              }}
-              className="mt-2 w-full text-[11px] text-muted-foreground underline"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -371,7 +286,6 @@ function DownloadBtn({
   primary,
   fullWidth,
   hdNote,
-  onAdRequest,
 }: {
   url: string;
   filename: string;
@@ -380,17 +294,12 @@ function DownloadBtn({
   primary?: boolean;
   fullWidth?: boolean;
   hdNote?: boolean;
-  onAdRequest?: (url: string, filename: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
   if (!url) return null;
   const href = proxiedDownloadUrl(url, filename);
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onAdRequest) {
-      onAdRequest(url, filename);
-      return;
-    }
     setBusy(true);
     try {
       await triggerDownload(href, filename);
@@ -408,9 +317,7 @@ function DownloadBtn({
       {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : icon}
       <span>{busy ? "Preparing…" : label}</span>
       {hdNote && (
-        <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
-          <Megaphone className="h-2.5 w-2.5" /> Watch 30s ad
-        </span>
+        <Megaphone className="h-3 w-3 opacity-90" aria-label="Contains an ad" />
       )}
     </a>
   );
