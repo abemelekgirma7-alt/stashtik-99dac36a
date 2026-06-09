@@ -153,12 +153,15 @@ export function ResultCard({
               src={result.videoNoWatermark}
               poster={result.cover}
               controls
+              controlsList="nodownload nofullscreen noremoteplayback"
+              disablePictureInPicture
               playsInline
               preload="metadata"
               className="aspect-[9/16] w-40 rounded-xl bg-black object-cover sm:w-[200px] md:w-[240px]"
             />
             <p className="mt-1 text-center text-[10px] text-muted-foreground">Preview without watermark</p>
           </div>
+
         ) : (
           result.cover && (
             <div className="relative mx-auto sm:mx-0">
