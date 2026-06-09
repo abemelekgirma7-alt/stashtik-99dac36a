@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Loader2,
   Music,
@@ -55,7 +55,7 @@ export function uniqueFilename(name: string) {
 }
 
 async function triggerDownload(url: string, filename: string) {
-  const finalName = uniqueFilename(filename);
+  const finalName = useMemo(() => uniqueFilename(filename), [filename]);
   // Direct same-origin navigation to the proxy. The server sets
   // Content-Disposition: attachment so the browser saves immediately and
   // streams the file in the background — no "buffer entire blob first" wait.
