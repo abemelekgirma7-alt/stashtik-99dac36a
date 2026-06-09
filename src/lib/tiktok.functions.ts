@@ -62,6 +62,7 @@ const TIKWM_HOSTS = [
 ];
 
 const SLB_FALLBACK_ENDPOINT = "https://tdownv4.sl-bjs.workers.dev/";
+const SANKA_FALLBACK_ENDPOINT = "https://www.sankavollerei.com/download/tiktok";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -164,6 +165,63 @@ async function callSlbFallback(url: string): Promise<TikTokSuccess | null> {
   }
 }
 
+async function callSankaFallback(url: string): Promise<TikTokSuccess | null> {
+  try {
+    const params = new URLSearchParams({ apikey: "planaai", url });
+    const res = await fetch(`${SANKA_FALLBACK_ENDPOINT}?${params.toString()}`, {
+      headers: {
+        accept: "application/json,text/plain,*/*",
+        "user-agent": UA,
+      },
+    });
+
+    if (!res.ok) return null;
+    const json = (await res.json()) as {
+      status?: boolean;
+      result?: {
+        title?: string;
+        cover?: string;
+        play?: string;
+        wmplay?: string;
+        hdplay?: string;
+        music?: string;
+        duration?: number;
+        images?: unknown[];
+        author?: { nickname?: string; unique_id?: string; username?: string };
+        music_info?: { play?: string; duration?: number };
+      };
+    };
+    const d = json.result;
+    if (!json.status || !d) return null;
+
+    const images = Array.isArray(d.images)
+      ? d.images.filter((item): item is string => typeof item === "string")
+      : undefined;
+    const videoNoWatermark = d.hdplay || d.play || d.wmplay || "";
+    const audio = d.music || d.music_info?.play || "";
+    if (!videoNoWatermark && !audio && !images?.length) return null;
+
+    return {
+      ok: true,
+      title: (d.title ?? "TikTok video").trim() || "TikTok video",
+      author: d.author?.nickname ?? d.author?.unique_id ?? d.author?.username ?? "TikTok",
+      cover: d.cover ?? "",
+      duration: d.duration ?? d.music_info?.duration ?? 0,
+      videoNoWatermark,
+      videoWatermark: d.wmplay ?? "",
+      videoHd: d.hdplay,
+      audio,
+      images,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function callFallbackProviders(url: string): Promise<TikTokSuccess | null> {
+  return (await callSankaFallback(url)) ?? (await callSlbFallback(url));
+}
+
 export const fetchTikTok = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }): Promise<TikTokResult> => {
@@ -197,13 +255,13 @@ export const fetchTikTok = createServerFn({ method: "POST" })
       );
 
       if (!json) {
-        const fallback = await callSlbFallback(data.url);
+        const fallback = await callFallbackProviders(data.url);
         if (fallback) return fallback;
         return { ok: false, error: "High demand right now — keep this page open and retry; StashTik will keep trying for you." };
       }
 
       if (json.code !== 0 || !json.data) {
-        const fallback = await callSlbFallback(data.url);
+        const fallback = await callFallbackProviders(data.url);
         if (fallback) return fallback;
         return { ok: false, error: friendlyMessage(json.msg) };
       }
