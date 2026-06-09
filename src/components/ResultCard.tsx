@@ -169,11 +169,7 @@ export function ResultCard({
               controlsList="nodownload"
               playsInline
               preload="metadata"
-              className="aspect-[9/16] w-40 rounded-xl bg-black object-contain sm:w-[200px] md:w-[240px] [&::-webkit-media-controls-fullscreen-button]:!hidden"
-              onWebkitBeginFullscreen={(e) => {
-                const v = e.currentTarget as HTMLVideoElement & { webkitExitFullscreen?: () => void };
-                v.webkitExitFullscreen?.();
-              }}
+              className="aspect-[9/16] w-40 rounded-xl bg-black object-contain sm:w-[200px] md:w-[240px]"
             />
             <p className="mt-1 text-center text-[10px] text-muted-foreground">
               Fullscreen &amp; Picture-in-Picture are in the player ⋯ menu
