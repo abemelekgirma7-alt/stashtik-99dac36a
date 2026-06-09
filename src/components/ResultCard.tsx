@@ -94,50 +94,7 @@ export function ResultCard({
   const images = result.images ?? [];
   const currentImg = images[imgIdx];
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [adOpen, setAdOpen] = useState(false);
-  const [adSeconds, setAdSeconds] = useState(AD_DURATION);
-  const [adError, setAdError] = useState<string | null>(null);
   const [hdStatus, setHdStatus] = useState<string | null>(null);
-  const pendingHd = useRef<null | { url: string; filename: string }>(null);
-
-  useEffect(() => {
-    if (!adOpen) return;
-    setAdSeconds(AD_DURATION);
-    setAdError(null);
-    const t = setInterval(() => {
-      setAdSeconds((s) => {
-        if (s <= 1) {
-          clearInterval(t);
-          return 0;
-        }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(t);
-  }, [adOpen]);
-
-  const requestHdWithAd = (url: string, filename: string) => {
-    pendingHd.current = { url, filename };
-    setHdStatus(null);
-    setAdOpen(true);
-  };
-
-  const finishHdDownload = async () => {
-    const p = pendingHd.current;
-    setAdOpen(false);
-    if (!p) return;
-    setHdStatus("Starting HD download…");
-    try {
-      const ok = await triggerDownload(proxiedDownloadUrl(p.url, p.filename), p.filename);
-      setHdStatus(ok ? "HD download started ✓" : "HD download opened in a new tab — long-press to save.");
-    } catch (err) {
-      console.error(err);
-      setHdStatus("HD download failed. Tap the SD option below as a fallback.");
-    } finally {
-      pendingHd.current = null;
-      setTimeout(() => setHdStatus(null), 6000);
-    }
-  };
 
   const downloadAllAsZip = async () => {
     if (!result.images?.length) return;
