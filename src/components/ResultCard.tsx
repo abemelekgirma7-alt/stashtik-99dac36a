@@ -280,28 +280,124 @@ function DownloadBtn({
 }) {
   if (!url) return null;
   const href = proxiedDownloadUrl(url, filename);
-  // Let the browser handle the download natively. The anchor has
-  // `download` + points to our same-origin proxy which sets
-  // Content-Disposition: attachment, so Chrome/Safari show their own
-  // download progress immediately — no "Preparing…" on our site.
-  const finalName = uniqueFilename(filename);
+  const finalName = useRef(uniqueFilename(filename)).current;
+  const { state, pct, received, total, error, start, cancel, resume } =
+    useDownload(href, finalName);
+  const [preSize, setPreSize] = useState<number | null>(null);
+
+  // Preflight once on mount so the user sees an estimated file size before clicking.
+  useEffect(() => {
+    let alive = true;
+    preflightSize(href).then((n) => {
+      if (alive) setPreSize(n);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [href]);
+
   const base =
-    "inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-transform hover:scale-[1.01] active:scale-[0.99]";
+    "relative overflow-hidden inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100";
   const variant = primary
     ? "bg-brand-gradient text-white shadow-brand"
     : "border border-border bg-card hover:bg-secondary";
+
+  const isWorking = state === "checking" || state === "downloading" || state === "paused";
+  const sizeLabel = total > 0 ? formatBytes(total) : preSize ? formatBytes(preSize) : null;
+
+  const handleClick = () => {
+    if (state === "downloading" || state === "checking") return;
+    if (state === "paused") {
+      resume();
+      return;
+    }
+    start();
+  };
+
+  let inner: React.ReactNode;
+  if (state === "checking") {
+    inner = (
+      <>
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <span>Checking link…</span>
+      </>
+    );
+  } else if (state === "downloading") {
+    inner = (
+      <>
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <span>
+          Downloading {pct}% • {formatBytes(received)}
+          {total ? ` / ${formatBytes(total)}` : ""}
+        </span>
+      </>
+    );
+  } else if (state === "paused") {
+    inner = (
+      <>
+        <WifiOff className="h-3.5 w-3.5" />
+        <span>
+          Paused at {pct}% — tap to resume
+        </span>
+      </>
+    );
+  } else if (state === "done") {
+    inner = (
+      <>
+        <CheckCircle2 className="h-3.5 w-3.5" />
+        <span>Saved • Download again</span>
+      </>
+    );
+  } else if (state === "error") {
+    inner = (
+      <>
+        <X className="h-3.5 w-3.5" />
+        <span>{error || "Failed"} — Retry</span>
+      </>
+    );
+  } else {
+    inner = (
+      <>
+        {icon}
+        <span>
+          {label}
+          {sizeLabel ? ` • ${sizeLabel}` : ""}
+        </span>
+        {hdNote && (
+          <Megaphone className="h-3 w-3 opacity-90" aria-label="Contains an ad" />
+        )}
+      </>
+    );
+  }
+
   return (
-    <a
-      href={href}
-      download={finalName}
-      rel="noopener"
-      className={`${base} ${variant} ${fullWidth ? "w-full" : ""}`}
-    >
-      {icon}
-      <span>{label}</span>
-      {hdNote && (
-        <Megaphone className="h-3 w-3 opacity-90" aria-label="Contains an ad" />
+    <div className={`flex items-stretch gap-1 ${fullWidth ? "w-full" : ""}`}>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={state === "checking" || state === "downloading"}
+        className={`${base} ${variant} ${fullWidth ? "flex-1" : ""}`}
+      >
+        {/* progress fill */}
+        {isWorking && (
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-0 bg-white/25"
+            style={{ width: `${pct}%`, transition: "width 150ms linear" }}
+          />
+        )}
+        <span className="relative z-10 inline-flex items-center gap-1.5">{inner}</span>
+      </button>
+      {(state === "downloading" || state === "paused" || state === "checking") && (
+        <button
+          type="button"
+          onClick={cancel}
+          aria-label="Cancel download"
+          className="inline-flex items-center justify-center rounded-lg border border-border bg-card px-2 text-muted-foreground hover:bg-secondary"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
       )}
-    </a>
+    </div>
   );
 }
