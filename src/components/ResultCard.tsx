@@ -237,7 +237,7 @@ export function ResultCard({
                     primary
                     fullWidth
                     hdNote
-                    onAdRequest={requestHdWithAd}
+                    
                   />
                 )}
                 <DownloadBtn
