@@ -10,8 +10,8 @@ import {
   Package,
   ChevronLeft,
   ChevronRight,
-  Maximize2,
-  PictureInPicture2,
+  Megaphone,
+  AlertTriangle,
 } from "lucide-react";
 import JSZip from "jszip";
 import type { TikTokSuccess } from "@/lib/tiktok.functions";
@@ -20,8 +20,14 @@ export type Mode = "video" | "mp3" | "stories" | "photos";
 
 export function makeFilename(title: string, ext: string) {
   const clean =
-    title
-      .replace(/[\\/:*?"<>|\n\r]/g, " ")
+    (title || "")
+      // strip emojis / pictographs / symbols that confuse downloads on iOS
+      .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/gu, "")
+      // strip filesystem-illegal characters
+      .replace(/[\\/:*?"<>|\n\r\t]/g, " ")
+      // strip control chars
+      .replace(/[\x00-\x1F\x7F]/g, "")
+      // collapse whitespace
       .replace(/\s+/g, " ")
       .trim()
       .slice(0, 80) || "tiktok";
@@ -71,6 +77,8 @@ async function triggerDownload(url: string, filename: string) {
   }
 }
 
+const AD_DURATION = 30;
+
 export function ResultCard({
   result,
   mode,
@@ -87,12 +95,15 @@ export function ResultCard({
   const currentImg = images[imgIdx];
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [adOpen, setAdOpen] = useState(false);
-  const [adSeconds, setAdSeconds] = useState(5);
+  const [adSeconds, setAdSeconds] = useState(AD_DURATION);
+  const [adError, setAdError] = useState<string | null>(null);
+  const [hdStatus, setHdStatus] = useState<string | null>(null);
   const pendingHd = useRef<null | { url: string; filename: string }>(null);
 
   useEffect(() => {
     if (!adOpen) return;
-    setAdSeconds(5);
+    setAdSeconds(AD_DURATION);
+    setAdError(null);
     const t = setInterval(() => {
       setAdSeconds((s) => {
         if (s <= 1) {
@@ -105,50 +116,9 @@ export function ResultCard({
     return () => clearInterval(t);
   }, [adOpen]);
 
-  const handleFullscreen = async () => {
-    const el = videoRef.current;
-    if (!el) return;
-    try {
-      const anyEl = el as HTMLVideoElement & {
-        webkitEnterFullscreen?: () => void;
-        webkitRequestFullscreen?: () => Promise<void>;
-      };
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      } else if (el.requestFullscreen) {
-        await el.requestFullscreen();
-      } else if (anyEl.webkitRequestFullscreen) {
-        await anyEl.webkitRequestFullscreen();
-      } else if (anyEl.webkitEnterFullscreen) {
-        anyEl.webkitEnterFullscreen();
-      }
-    } catch (err) {
-      console.error("Fullscreen failed", err);
-    }
-  };
-
-  const handlePiP = async () => {
-    const el = videoRef.current as
-      | (HTMLVideoElement & { requestPictureInPicture?: () => Promise<PictureInPictureWindow> })
-      | null;
-    if (!el) return;
-    try {
-      const d = document as Document & {
-        pictureInPictureElement?: Element | null;
-        exitPictureInPicture?: () => Promise<void>;
-      };
-      if (d.pictureInPictureElement) {
-        await d.exitPictureInPicture?.();
-      } else if (el.requestPictureInPicture) {
-        await el.requestPictureInPicture();
-      }
-    } catch (err) {
-      console.error("PiP failed", err);
-    }
-  };
-
   const requestHdWithAd = (url: string, filename: string) => {
     pendingHd.current = { url, filename };
+    setHdStatus(null);
     setAdOpen(true);
   };
 
@@ -156,8 +126,17 @@ export function ResultCard({
     const p = pendingHd.current;
     setAdOpen(false);
     if (!p) return;
-    await triggerDownload(proxiedDownloadUrl(p.url, p.filename), p.filename);
-    pendingHd.current = null;
+    setHdStatus("Starting HD download…");
+    try {
+      const ok = await triggerDownload(proxiedDownloadUrl(p.url, p.filename), p.filename);
+      setHdStatus(ok ? "HD download started ✓" : "HD download opened in a new tab — long-press to save.");
+    } catch (err) {
+      console.error(err);
+      setHdStatus("HD download failed. Tap the SD option below as a fallback.");
+    } finally {
+      pendingHd.current = null;
+      setTimeout(() => setHdStatus(null), 6000);
+    }
   };
 
   const downloadAllAsZip = async () => {
@@ -235,25 +214,10 @@ export function ResultCard({
               preload="metadata"
               className="aspect-[9/16] w-40 rounded-xl bg-black object-cover sm:w-[200px] md:w-[240px]"
             />
-            <div className="mt-1.5 flex justify-center gap-1.5">
-              <button
-                type="button"
-                onClick={handleFullscreen}
-                className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold hover:bg-secondary"
-              >
-                <Maximize2 className="h-3 w-3" /> Fullscreen
-              </button>
-              <button
-                type="button"
-                onClick={handlePiP}
-                className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold hover:bg-secondary"
-              >
-                <PictureInPicture2 className="h-3 w-3" /> Picture-in-Picture
-              </button>
-            </div>
-            <p className="mt-1 text-center text-[10px] text-muted-foreground">Preview without watermark</p>
+            <p className="mt-1 text-center text-[10px] text-muted-foreground">
+              Fullscreen &amp; Picture-in-Picture are in the player ⋯ menu
+            </p>
           </div>
-
         ) : (
           result.cover && (
             <div className="relative mx-auto sm:mx-0">
@@ -300,18 +264,18 @@ export function ResultCard({
               <DownloadBtn
                 url={result.audio}
                 filename={makeFilename(result.title, "mp3")}
-                label="Download MP3"
+                label="Download MP3 (Audio only)"
                 icon={<Music className="h-3.5 w-3.5" />}
                 primary
                 fullWidth
               />
             ) : (
               <>
-                {result.videoHd && (
+                {(result.videoHd || result.videoNoWatermark) && (
                   <DownloadBtn
-                    url={result.videoHd}
+                    url={result.videoHd || result.videoNoWatermark}
                     filename={makeFilename(`${result.title}-HD`, "mp4")}
-                    label="Download HD — No Watermark"
+                    label="Download HD Video (No Watermark)"
                     icon={<Sparkles className="h-3.5 w-3.5" />}
                     primary
                     fullWidth
@@ -322,9 +286,8 @@ export function ResultCard({
                 <DownloadBtn
                   url={result.videoNoWatermark}
                   filename={makeFilename(`${result.title}-SD`, "mp4")}
-                  label={result.videoHd ? "Download SD — No Watermark (Free)" : "Download Video (No Watermark)"}
+                  label="Download SD Video (No Watermark) — Free"
                   icon={<Video className="h-3.5 w-3.5" />}
-                  primary={!result.videoHd}
                   fullWidth
                 />
                 <DownloadBtn
@@ -337,6 +300,10 @@ export function ResultCard({
               </>
             )}
           </div>
+
+          {hdStatus && (
+            <p className="mt-2 text-[11px] text-muted-foreground">{hdStatus}</p>
+          )}
 
           {onReset && (
             <button
@@ -355,28 +322,35 @@ export function ResultCard({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 animate-fade-in">
           <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-center shadow-soft">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-gradient text-white">
-              <PlayCircle className="h-6 w-6" />
+              <Megaphone className="h-6 w-6" />
             </div>
-            <h4 className="mt-3 text-base font-semibold">Watch a short ad to unlock HD</h4>
+            <h4 className="mt-3 text-base font-semibold">Watch a 30-second ad to unlock HD</h4>
             <p className="mt-1 text-xs text-muted-foreground">
-              HD downloads are supported by a quick sponsor message. Thanks for keeping StashTik free!
+              HD downloads are supported by a short sponsor message. Your download starts the moment the ad finishes.
             </p>
             <div className="mt-4 flex aspect-video items-center justify-center rounded-lg bg-black text-xs text-white/70">
-              Sponsored — your ad plays here
+              Sponsored — your ad plays here ({AD_DURATION - adSeconds + 1}/{AD_DURATION}s)
             </div>
+            {adError && (
+              <p className="mt-2 flex items-center justify-center gap-1 text-[11px] text-destructive">
+                <AlertTriangle className="h-3 w-3" /> {adError}
+              </p>
+            )}
             <button
               type="button"
               disabled={adSeconds > 0}
               onClick={finishHdDownload}
               className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand-gradient px-3 py-2 text-xs font-semibold text-white shadow-brand disabled:opacity-60"
             >
-              {adSeconds > 0 ? `Skip in ${adSeconds}s` : "Continue HD download"}
+              {adSeconds > 0 ? `Ad ends in ${adSeconds}s…` : "Continue HD download"}
             </button>
             <button
               type="button"
               onClick={() => {
                 pendingHd.current = null;
                 setAdOpen(false);
+                setHdStatus("HD download canceled. You can still grab the free SD version below.");
+                setTimeout(() => setHdStatus(null), 5000);
               }}
               className="mt-2 w-full text-[11px] text-muted-foreground underline"
             >
@@ -435,7 +409,7 @@ function DownloadBtn({
       <span>{busy ? "Preparing…" : label}</span>
       {hdNote && (
         <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
-          <PlayCircle className="h-2.5 w-2.5" /> Watch ad
+          <Megaphone className="h-2.5 w-2.5" /> Watch 30s ad
         </span>
       )}
     </a>
