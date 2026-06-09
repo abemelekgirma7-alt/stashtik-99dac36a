@@ -6,7 +6,6 @@ import { Loader2, RotateCcw, CheckCircle2, AlertTriangle, X } from "lucide-react
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ResultCard, type Mode } from "@/components/ResultCard";
-import { RecentDownloads } from "@/components/RecentDownloads";
 import { fetchTikTok, type TikTokSuccess } from "@/lib/tiktok.functions";
 
 const searchSchema = z.object({
@@ -224,8 +223,6 @@ function ResultPage() {
               />
             </div>
           )}
-
-          <RecentDownloads />
         </section>
       </main>
       <Footer />

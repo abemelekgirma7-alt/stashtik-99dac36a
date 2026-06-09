@@ -11,13 +11,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/download")({
   server: {
     handlers: {
-      HEAD: async ({ request }) => handle(request, "HEAD"),
-      GET: async ({ request }) => handle(request, "GET"),
-    },
-  },
-});
-
-async function handle(request: Request, method: "GET" | "HEAD") {
+      GET: async ({ request }) => {
         const u = new URL(request.url);
         const target = u.searchParams.get("url");
         const filenameRaw = u.searchParams.get("filename") || "tiktok";
@@ -43,22 +37,16 @@ async function handle(request: Request, method: "GET" | "HEAD") {
           });
         }
 
-        const fwdHeaders: Record<string, string> = {
-          "user-agent":
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
-          referer: "https://www.tiktok.com/",
-        };
-        const range = request.headers.get("range");
-        if (range) fwdHeaders["range"] = range;
-
-        const upstream = await fetch(target, { method, headers: fwdHeaders });
+        const upstream = await fetch(target, {
+          headers: {
+            "user-agent":
+              "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+            referer: "https://www.tiktok.com/",
+          },
+        });
 
         if (!upstream.ok || !upstream.body) {
-          if (method === "HEAD" && upstream.ok) {
-            // HEAD with no body is fine.
-          } else {
           return new Response("Upstream error", { status: 502 });
-          }
         }
 
         // Sanitize filename — strip path separators and quotes.
@@ -70,21 +58,16 @@ async function handle(request: Request, method: "GET" | "HEAD") {
 
         const contentType = upstream.headers.get("content-type") || "application/octet-stream";
         const contentLength = upstream.headers.get("content-length");
-        const contentRange = upstream.headers.get("content-range");
-        const acceptRanges = upstream.headers.get("accept-ranges") || "bytes";
 
         const headers = new Headers({
           "content-type": contentType,
           "content-disposition": `attachment; filename="${safeName}"; filename*=UTF-8''${encodeURIComponent(safeName)}`,
           "cache-control": "no-store",
-          "accept-ranges": acceptRanges,
-          // CORS — same-origin in app but helps when called from blob URLs / workers.
-          "access-control-allow-origin": "*",
-          "access-control-expose-headers": "content-length, content-range, accept-ranges",
         });
         if (contentLength) headers.set("content-length", contentLength);
-        if (contentRange) headers.set("content-range", contentRange);
 
-        const status = contentRange ? 206 : 200;
-        return new Response(method === "HEAD" ? null : upstream.body, { status, headers });
-}
+        return new Response(upstream.body, { status: 200, headers });
+      },
+    },
+  },
+});

@@ -3,7 +3,6 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { PageHero } from "@/components/PageHero";
 import { DownloaderForm } from "@/components/DownloaderForm";
 import { HomeSections } from "@/components/HomeSections";
-import { RecentDownloads } from "@/components/RecentDownloads";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,10 +35,6 @@ function Home() {
       >
         <DownloaderForm mode="video" />
       </PageHero>
-
-      <div className="container mx-auto px-4">
-        <RecentDownloads />
-      </div>
 
       <HomeSections />
     </SiteLayout>
