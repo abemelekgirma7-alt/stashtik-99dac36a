@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Loader2,
   Music,
@@ -10,6 +10,8 @@ import {
   Package,
   ChevronLeft,
   ChevronRight,
+  Maximize2,
+  PictureInPicture2,
 } from "lucide-react";
 import JSZip from "jszip";
 import type { TikTokSuccess } from "@/lib/tiktok.functions";
@@ -23,7 +25,7 @@ export function makeFilename(title: string, ext: string) {
       .replace(/\s+/g, " ")
       .trim()
       .slice(0, 80) || "tiktok";
-  return `StashTik - ${clean}.${ext}`;
+  return `StashTik-(${clean}).${ext}`;
 }
 
 export function proxiedDownloadUrl(url: string, filename: string) {
@@ -41,8 +43,8 @@ export function uniqueFilename(name: string) {
   const base = dot > 0 ? name.slice(0, dot) : name;
   const ext = dot > 0 ? name.slice(dot) : "";
   let i = 1;
-  while (downloadedNames.has(`${base} (${i})${ext}`)) i++;
-  const fresh = `${base} (${i})${ext}`;
+  while (downloadedNames.has(`${base} ${i}${ext}`)) i++;
+  const fresh = `${base} ${i}${ext}`;
   downloadedNames.add(fresh);
   return fresh;
 }
@@ -83,6 +85,80 @@ export function ResultCard({
   const [imgIdx, setImgIdx] = useState(0);
   const images = result.images ?? [];
   const currentImg = images[imgIdx];
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [adOpen, setAdOpen] = useState(false);
+  const [adSeconds, setAdSeconds] = useState(5);
+  const pendingHd = useRef<null | { url: string; filename: string }>(null);
+
+  useEffect(() => {
+    if (!adOpen) return;
+    setAdSeconds(5);
+    const t = setInterval(() => {
+      setAdSeconds((s) => {
+        if (s <= 1) {
+          clearInterval(t);
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [adOpen]);
+
+  const handleFullscreen = async () => {
+    const el = videoRef.current;
+    if (!el) return;
+    try {
+      const anyEl = el as HTMLVideoElement & {
+        webkitEnterFullscreen?: () => void;
+        webkitRequestFullscreen?: () => Promise<void>;
+      };
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (el.requestFullscreen) {
+        await el.requestFullscreen();
+      } else if (anyEl.webkitRequestFullscreen) {
+        await anyEl.webkitRequestFullscreen();
+      } else if (anyEl.webkitEnterFullscreen) {
+        anyEl.webkitEnterFullscreen();
+      }
+    } catch (err) {
+      console.error("Fullscreen failed", err);
+    }
+  };
+
+  const handlePiP = async () => {
+    const el = videoRef.current as
+      | (HTMLVideoElement & { requestPictureInPicture?: () => Promise<PictureInPictureWindow> })
+      | null;
+    if (!el) return;
+    try {
+      const d = document as Document & {
+        pictureInPictureElement?: Element | null;
+        exitPictureInPicture?: () => Promise<void>;
+      };
+      if (d.pictureInPictureElement) {
+        await d.exitPictureInPicture?.();
+      } else if (el.requestPictureInPicture) {
+        await el.requestPictureInPicture();
+      }
+    } catch (err) {
+      console.error("PiP failed", err);
+    }
+  };
+
+  const requestHdWithAd = (url: string, filename: string) => {
+    pendingHd.current = { url, filename };
+    setAdOpen(true);
+  };
+
+  const finishHdDownload = async () => {
+    const p = pendingHd.current;
+    setAdOpen(false);
+    if (!p) return;
+    await triggerDownload(proxiedDownloadUrl(p.url, p.filename), p.filename);
+    pendingHd.current = null;
+  };
 
   const downloadAllAsZip = async () => {
     if (!result.images?.length) return;
@@ -150,15 +226,31 @@ export function ResultCard({
         ) : mode !== "mp3" && result.videoNoWatermark ? (
           <div className="mx-auto sm:mx-0">
             <video
+              ref={videoRef}
               src={result.videoNoWatermark}
               poster={result.cover}
               controls
-              controlsList="nodownload nofullscreen noremoteplayback"
-              disablePictureInPicture
+              controlsList="nodownload"
               playsInline
               preload="metadata"
               className="aspect-[9/16] w-40 rounded-xl bg-black object-cover sm:w-[200px] md:w-[240px]"
             />
+            <div className="mt-1.5 flex justify-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleFullscreen}
+                className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold hover:bg-secondary"
+              >
+                <Maximize2 className="h-3 w-3" /> Fullscreen
+              </button>
+              <button
+                type="button"
+                onClick={handlePiP}
+                className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-1 text-[10px] font-semibold hover:bg-secondary"
+              >
+                <PictureInPicture2 className="h-3 w-3" /> Picture-in-Picture
+              </button>
+            </div>
             <p className="mt-1 text-center text-[10px] text-muted-foreground">Preview without watermark</p>
           </div>
 
@@ -219,17 +311,18 @@ export function ResultCard({
                   <DownloadBtn
                     url={result.videoHd}
                     filename={makeFilename(`${result.title}-HD`, "mp4")}
-                    label="HD — No Watermark"
+                    label="Download HD — No Watermark"
                     icon={<Sparkles className="h-3.5 w-3.5" />}
                     primary
                     fullWidth
                     hdNote
+                    onAdRequest={requestHdWithAd}
                   />
                 )}
                 <DownloadBtn
                   url={result.videoNoWatermark}
-                  filename={makeFilename(result.title, "mp4")}
-                  label={result.videoHd ? "SD — No Watermark" : "Download Video (No Watermark)"}
+                  filename={makeFilename(`${result.title}-SD`, "mp4")}
+                  label={result.videoHd ? "Download SD — No Watermark (Free)" : "Download Video (No Watermark)"}
                   icon={<Video className="h-3.5 w-3.5" />}
                   primary={!result.videoHd}
                   fullWidth
@@ -257,6 +350,41 @@ export function ResultCard({
           )}
         </div>
       </div>
+
+      {adOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 animate-fade-in">
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-center shadow-soft">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-gradient text-white">
+              <PlayCircle className="h-6 w-6" />
+            </div>
+            <h4 className="mt-3 text-base font-semibold">Watch a short ad to unlock HD</h4>
+            <p className="mt-1 text-xs text-muted-foreground">
+              HD downloads are supported by a quick sponsor message. Thanks for keeping StashTik free!
+            </p>
+            <div className="mt-4 flex aspect-video items-center justify-center rounded-lg bg-black text-xs text-white/70">
+              Sponsored — your ad plays here
+            </div>
+            <button
+              type="button"
+              disabled={adSeconds > 0}
+              onClick={finishHdDownload}
+              className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand-gradient px-3 py-2 text-xs font-semibold text-white shadow-brand disabled:opacity-60"
+            >
+              {adSeconds > 0 ? `Skip in ${adSeconds}s` : "Continue HD download"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                pendingHd.current = null;
+                setAdOpen(false);
+              }}
+              className="mt-2 w-full text-[11px] text-muted-foreground underline"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -269,6 +397,7 @@ function DownloadBtn({
   primary,
   fullWidth,
   hdNote,
+  onAdRequest,
 }: {
   url: string;
   filename: string;
@@ -277,12 +406,17 @@ function DownloadBtn({
   primary?: boolean;
   fullWidth?: boolean;
   hdNote?: boolean;
+  onAdRequest?: (url: string, filename: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
   if (!url) return null;
   const href = proxiedDownloadUrl(url, filename);
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
+    if (onAdRequest) {
+      onAdRequest(url, filename);
+      return;
+    }
     setBusy(true);
     try {
       await triggerDownload(href, filename);
