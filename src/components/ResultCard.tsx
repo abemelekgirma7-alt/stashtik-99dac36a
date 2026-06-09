@@ -12,8 +12,6 @@ import {
   ChevronRight,
   Megaphone,
   X,
-  Pause,
-  Play,
   CheckCircle2,
   WifiOff,
 } from "lucide-react";
