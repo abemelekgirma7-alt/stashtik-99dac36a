@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Loader2,
   Music,
@@ -11,9 +11,16 @@ import {
   ChevronLeft,
   ChevronRight,
   Megaphone,
+  X,
+  Pause,
+  Play,
+  CheckCircle2,
+  WifiOff,
 } from "lucide-react";
 import JSZip from "jszip";
 import type { TikTokSuccess } from "@/lib/tiktok.functions";
+import { useDownload, preflightSize } from "@/lib/use-download";
+import { formatBytes } from "@/lib/downloads";
 
 export type Mode = "video" | "mp3" | "stories" | "photos";
 
@@ -53,29 +60,6 @@ export function uniqueFilename(name: string) {
   downloadedNames.add(fresh);
   return fresh;
 }
-
-async function triggerDownload(url: string, filename: string) {
-  const finalName = useMemo(() => uniqueFilename(filename), [filename]);
-  // Direct same-origin navigation to the proxy. The server sets
-  // Content-Disposition: attachment so the browser saves immediately and
-  // streams the file in the background — no "buffer entire blob first" wait.
-  try {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = finalName;
-    a.rel = "noopener";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    return true;
-  } catch (err) {
-    console.error("Download failed", err);
-    window.open(url, "_blank", "noopener");
-    return false;
-  }
-}
-
-
 
 export function ResultCard({
   result,
