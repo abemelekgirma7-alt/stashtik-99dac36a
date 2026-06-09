@@ -76,7 +76,7 @@ async function triggerDownload(url: string, filename: string) {
   }
 }
 
-const AD_DURATION = 30;
+
 
 export function ResultCard({
   result,
