@@ -287,7 +287,6 @@ function DownloadBtn({
   primary,
   fullWidth,
   hdNote,
-  onAdRequest,
 }: {
   url: string;
   filename: string;
@@ -296,17 +295,12 @@ function DownloadBtn({
   primary?: boolean;
   fullWidth?: boolean;
   hdNote?: boolean;
-  onAdRequest?: (url: string, filename: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
   if (!url) return null;
   const href = proxiedDownloadUrl(url, filename);
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onAdRequest) {
-      onAdRequest(url, filename);
-      return;
-    }
     setBusy(true);
     try {
       await triggerDownload(href, filename);
@@ -324,9 +318,7 @@ function DownloadBtn({
       {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : icon}
       <span>{busy ? "Preparing…" : label}</span>
       {hdNote && (
-        <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-white/25 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider">
-          <Megaphone className="h-2.5 w-2.5" /> Watch 30s ad
-        </span>
+        <Megaphone className="h-3 w-3 opacity-90" aria-label="Contains an ad" />
       )}
     </a>
   );
