@@ -58,8 +58,10 @@ function ResultPage() {
     const stages = [
       { at: 600, p: 25, s: "Resolving TikTok link…" },
       { at: 1400, p: 45, s: "Fetching media…" },
-      { at: 2600, p: 65, s: "Removing watermark…" },
-      { at: 4200, p: 82, s: "Preparing download…" },
+      { at: 2600, p: 60, s: "Removing watermark…" },
+      { at: 4200, p: 75, s: "Preparing download…" },
+      { at: 7000, p: 85, s: "Servers are busy — retrying for you…" },
+      { at: 12000, p: 92, s: "Still working — high demand, hang tight…" },
     ];
     const t0 = Date.now();
     progressTimer.current = setInterval(() => {
@@ -69,8 +71,9 @@ function ResultPage() {
         setProgress((p) => (p < stage.p ? stage.p : p));
         setStatus((s) => (s === stage.s ? s : stage.s));
       }
-      setProgress((p) => (p < 92 ? p + Math.max(0.4, (94 - p) / 30) : p));
+      setProgress((p) => (p < 95 ? p + Math.max(0.2, (96 - p) / 60) : p));
     }, 200);
+
 
     const ctrl = new AbortController();
     abortRef.current = ctrl;
