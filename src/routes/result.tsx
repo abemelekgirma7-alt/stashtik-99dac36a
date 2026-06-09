@@ -84,12 +84,14 @@ function ResultPage() {
     abortRef.current = ctrl;
 
     (async () => {
+      let keepLoadingForRetry = false;
       try {
         const res = await fetchFn({ data: { url: u }, signal: ctrl.signal } as never);
         if (myAttempt !== attemptRef.current) return; // stale
         if (!res.ok) {
           const transient = /trouble|demand|busy|rate|limit|moment|network|reaching/i.test(res.error);
           if (transient) {
+            keepLoadingForRetry = true;
             setStatus("High demand — still retrying for you…");
             setProgress((p) => Math.max(p, 88));
             retryTimer.current = setTimeout(() => {
@@ -123,6 +125,7 @@ function ResultPage() {
         );
       } finally {
         if (myAttempt !== attemptRef.current) return;
+        if (keepLoadingForRetry) return;
         clearProgress();
         setProgress(100);
         setLoading(false);
