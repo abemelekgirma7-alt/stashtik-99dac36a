@@ -50,6 +50,76 @@ function friendlyMessage(raw?: string): string {
   return "We couldn't fetch this TikTok. It may be private, deleted, or region-locked.";
 }
 
+const UA =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15";
+
+// Multiple upstream mirrors. We rotate through them and retry on rate-limits
+// so the user request never fails purely because one host is throttling.
+const TIKWM_HOSTS = [
+  "https://www.tikwm.com",
+  "https://tikwm.com",
+  "https://api.tikwm.com",
+];
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+function isRateLimited(msg?: string) {
+  if (!msg) return false;
+  const m = msg.toLowerCase();
+  return (
+    m.includes("limit") ||
+    m.includes("rate") ||
+    m.includes("too many") ||
+    m.includes("free api")
+  );
+}
+
+async function callTikwm(
+  path: "/api/" | "/api/music/info",
+  body: URLSearchParams,
+): Promise<{ code: number; msg?: string; data?: any } | null> {
+  // Up to ~6 attempts spread across mirrors, with backoff on rate-limits.
+  const maxAttempts = 6;
+  let lastJson: { code: number; msg?: string; data?: any } | null = null;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const host = TIKWM_HOSTS[attempt % TIKWM_HOSTS.length];
+    try {
+      const res = await fetch(host + path, {
+        method: "POST",
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+          "user-agent": UA,
+        },
+        body: body.toString(),
+      });
+
+      if (!res.ok) {
+        // 429 or 5xx — back off and try next mirror.
+        await sleep(800 + attempt * 600);
+        continue;
+      }
+
+      const json = (await res.json()) as { code: number; msg?: string; data?: any };
+      lastJson = json;
+
+      if (json.code === 0 && json.data) return json;
+
+      if (isRateLimited(json.msg)) {
+        // Wait longer the more we've retried (tikwm free tier is ~1 req/sec).
+        await sleep(1200 + attempt * 800);
+        continue;
+      }
+
+      // Real error (invalid url, private, etc.) — no point retrying.
+      return json;
+    } catch {
+      await sleep(500 + attempt * 400);
+    }
+  }
+  return lastJson;
+}
+
 export const fetchTikTok = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }): Promise<TikTokResult> => {
@@ -57,87 +127,63 @@ export const fetchTikTok = createServerFn({ method: "POST" })
       const isMusicUrl = /tiktok\.com\/music\//i.test(data.url);
 
       if (isMusicUrl) {
-        const mres = await fetch("https://www.tikwm.com/api/music/info", {
-          method: "POST",
-          headers: {
-            "content-type": "application/x-www-form-urlencoded",
-            "user-agent":
-              "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
-          },
-          body: new URLSearchParams({ url: data.url }).toString(),
-        });
-        if (mres.ok) {
-          const mj = (await mres.json()) as {
-            code: number;
-            msg?: string;
-            data?: { title?: string; play?: string; cover?: string; duration?: number; author?: string };
+        const mj = await callTikwm(
+          "/api/music/info",
+          new URLSearchParams({ url: data.url }),
+        );
+        if (mj?.code === 0 && mj.data?.play) {
+          const md = mj.data;
+          return {
+            ok: true,
+            title: (md.title ?? "TikTok audio").trim() || "TikTok audio",
+            author: md.author ?? "TikTok",
+            cover: md.cover ?? "",
+            duration: md.duration ?? 0,
+            videoNoWatermark: "",
+            videoWatermark: "",
+            audio: md.play,
           };
-          if (mj.code === 0 && mj.data?.play) {
-            const md = mj.data;
-            return {
-              ok: true,
-              title: (md.title ?? "TikTok audio").trim() || "TikTok audio",
-              author: md.author ?? "TikTok",
-              cover: md.cover ?? "",
-              duration: md.duration ?? 0,
-              videoNoWatermark: "",
-              videoWatermark: "",
-              audio: md.play!,
-            };
-          }
-          return { ok: false, error: friendlyMessage(mj.msg) };
         }
+        // Fall through to generic endpoint as a last resort.
       }
 
-      const res = await fetch("https://www.tikwm.com/api/", {
-        method: "POST",
-        headers: {
-          "content-type": "application/x-www-form-urlencoded",
-          "user-agent":
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
-        },
-        body: new URLSearchParams({ url: data.url, hd: "1" }).toString(),
-      });
+      const json = await callTikwm(
+        "/api/",
+        new URLSearchParams({ url: data.url, hd: "1" }),
+      );
 
-      if (!res.ok) {
+      if (!json) {
         return {
           ok: false,
-          error: "Our downloader is having trouble reaching TikTok. Please try again in a moment.",
+          error:
+            "Our downloader is having trouble reaching TikTok right now. Please try again in a moment.",
         };
       }
-
-      const json = (await res.json()) as {
-        code: number;
-        msg?: string;
-        data?: {
-          title?: string;
-          cover?: string;
-          duration?: number;
-          play?: string;
-          wmplay?: string;
-          hdplay?: string;
-          music?: string;
-          images?: string[];
-          author?: { nickname?: string; unique_id?: string };
-        };
-      };
 
       if (json.code !== 0 || !json.data) {
         return { ok: false, error: friendlyMessage(json.msg) };
       }
 
-      const d = json.data;
+      const d = json.data as {
+        title?: string;
+        cover?: string;
+        duration?: number;
+        play?: string;
+        wmplay?: string;
+        hdplay?: string;
+        music?: string;
+        images?: string[];
+        author?: { nickname?: string; unique_id?: string };
+      };
       const hasMedia = !!(d.play || d.hdplay || d.wmplay || d.music || (d.images && d.images.length));
       if (!hasMedia) {
         return {
           ok: false,
-          error: "This TikTok doesn't contain downloadable media (it may be a live or unsupported format).",
+          error:
+            "This TikTok doesn't contain downloadable media (it may be a live or unsupported format).",
         };
       }
 
-      // Watermark-free fallback chain: prefer `play` (no watermark), then `hdplay`,
-      // and only fall back to the watermarked `wmplay` if both are missing so the
-      // user always gets *something* to download.
       const noWatermark = d.play || d.hdplay || d.wmplay || "";
       return {
         ok: true,
