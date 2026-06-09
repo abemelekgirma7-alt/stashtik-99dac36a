@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Loader2,
   Music,
@@ -11,7 +11,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Megaphone,
-  AlertTriangle,
 } from "lucide-react";
 import JSZip from "jszip";
 import type { TikTokSuccess } from "@/lib/tiktok.functions";
