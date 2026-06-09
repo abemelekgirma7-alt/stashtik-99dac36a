@@ -275,47 +275,6 @@ export function ResultCard({
         </div>
       </div>
 
-      {adOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 animate-fade-in">
-          <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 text-center shadow-soft">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-gradient text-white">
-              <Megaphone className="h-6 w-6" />
-            </div>
-            <h4 className="mt-3 text-base font-semibold">Watch a 30-second ad to unlock HD</h4>
-            <p className="mt-1 text-xs text-muted-foreground">
-              HD downloads are supported by a short sponsor message. Your download starts the moment the ad finishes.
-            </p>
-            <div className="mt-4 flex aspect-video items-center justify-center rounded-lg bg-black text-xs text-white/70">
-              Sponsored — your ad plays here ({AD_DURATION - adSeconds + 1}/{AD_DURATION}s)
-            </div>
-            {adError && (
-              <p className="mt-2 flex items-center justify-center gap-1 text-[11px] text-destructive">
-                <AlertTriangle className="h-3 w-3" /> {adError}
-              </p>
-            )}
-            <button
-              type="button"
-              disabled={adSeconds > 0}
-              onClick={finishHdDownload}
-              className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand-gradient px-3 py-2 text-xs font-semibold text-white shadow-brand disabled:opacity-60"
-            >
-              {adSeconds > 0 ? `Ad ends in ${adSeconds}s…` : "Continue HD download"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                pendingHd.current = null;
-                setAdOpen(false);
-                setHdStatus("HD download canceled. You can still grab the free SD version below.");
-                setTimeout(() => setHdStatus(null), 5000);
-              }}
-              className="mt-2 w-full text-[11px] text-muted-foreground underline"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
