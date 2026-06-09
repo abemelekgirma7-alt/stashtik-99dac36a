@@ -77,6 +77,14 @@ export function useDownload(url: string, filename: string) {
         if (res.status !== 200 && res.status !== 206) {
           throw new Error(`HTTP ${res.status}`);
         }
+        // If we asked for a Range but the server ignored it (returned 200 with
+        // the full body), restart from byte 0 so our progress counter stays
+        // in sync with what we actually receive.
+        if (fromByte > 0 && res.status === 200) {
+          chunksRef.current = [];
+          fromByte = 0;
+          setR(0);
+        }
         const cl = res.headers.get("content-length");
         const cr = res.headers.get("content-range");
         if (cr) {
