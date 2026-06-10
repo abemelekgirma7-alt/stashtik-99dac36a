@@ -2,6 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { PageHero } from "@/components/PageHero";
 import { StepsSection } from "@/components/StepsSection";
+import { absUrl, faqSchema, jsonLd } from "@/lib/seo";
+
+const HOWTO_FAQ = [
+  { q: "How do I download a TikTok video?", a: "Copy the TikTok video link, paste it into StashTik, then tap Download to save it without watermark." },
+  { q: "Where do I find the TikTok link?", a: "In the TikTok app, tap Share on any video and choose Copy Link. Then paste it into StashTik." },
+  { q: "Do I need an account?", a: "No. StashTik works instantly without any login or signup." },
+];
 
 export const Route = createFileRoute("/how-to")({
   head: () => ({
@@ -14,7 +21,10 @@ export const Route = createFileRoute("/how-to")({
       },
       { property: "og:title", content: "How to Use StashTik" },
       { property: "og:description", content: "Step-by-step TikTok download guide." },
+      { property: "og:url", content: absUrl("/how-to") },
     ],
+    links: [{ rel: "canonical", href: absUrl("/how-to") }],
+    scripts: [jsonLd(faqSchema(HOWTO_FAQ))],
   }),
   component: HowTo,
 });
