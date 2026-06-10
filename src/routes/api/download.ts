@@ -37,15 +37,19 @@ export const Route = createFileRoute("/api/download")({
           });
         }
 
-        const upstream = await fetch(target, {
-          headers: {
-            "user-agent":
-              "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
-            referer: "https://www.tiktok.com/",
-          },
-        });
+        // Forward Range header so the browser can resume an interrupted
+        // download instead of starting over. TikTok CDNs honor Range.
+        const range = request.headers.get("range") ?? undefined;
+        const upstreamHeaders: Record<string, string> = {
+          "user-agent":
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",
+          referer: "https://www.tiktok.com/",
+        };
+        if (range) upstreamHeaders["range"] = range;
 
-        if (!upstream.ok || !upstream.body) {
+        const upstream = await fetch(target, { headers: upstreamHeaders });
+
+        if (!upstream.body || (upstream.status !== 200 && upstream.status !== 206)) {
           return new Response("Upstream error", { status: 502 });
         }
 
@@ -58,15 +62,21 @@ export const Route = createFileRoute("/api/download")({
 
         const contentType = upstream.headers.get("content-type") || "application/octet-stream";
         const contentLength = upstream.headers.get("content-length");
+        const contentRange = upstream.headers.get("content-range");
+        const acceptRanges = upstream.headers.get("accept-ranges") ?? "bytes";
 
         const headers = new Headers({
           "content-type": contentType,
           "content-disposition": `attachment; filename="${safeName}"; filename*=UTF-8''${encodeURIComponent(safeName)}`,
-          "cache-control": "no-store",
+          // Enable resumable downloads — browsers need this to retry from
+          // the last received byte after a connection drop.
+          "accept-ranges": acceptRanges,
+          "cache-control": "public, max-age=3600",
         });
         if (contentLength) headers.set("content-length", contentLength);
+        if (contentRange) headers.set("content-range", contentRange);
 
-        return new Response(upstream.body, { status: 200, headers });
+        return new Response(upstream.body, { status: upstream.status, headers });
       },
     },
   },

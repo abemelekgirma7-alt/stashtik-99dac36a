@@ -35,6 +35,35 @@ export type TikTokSuccess = {
 
 export type TikTokResult = TikTokSuccess | { ok: false; error: string };
 
+// Simple in-memory LRU cache for resolved TikTok metadata. Cloudflare Workers
+// keep this per-isolate, so repeated downloads of the same link in the same
+// region skip the upstream round-trip entirely.
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 min — TikTok CDN URLs expire fast
+const CACHE_MAX = 500;
+type CacheEntry = { value: TikTokSuccess; expires: number };
+const resultCache = new Map<string, CacheEntry>();
+
+function cacheGet(key: string): TikTokSuccess | null {
+  const hit = resultCache.get(key);
+  if (!hit) return null;
+  if (hit.expires < Date.now()) {
+    resultCache.delete(key);
+    return null;
+  }
+  // refresh LRU order
+  resultCache.delete(key);
+  resultCache.set(key, hit);
+  return hit.value;
+}
+
+function cacheSet(key: string, value: TikTokSuccess) {
+  if (resultCache.size >= CACHE_MAX) {
+    const oldest = resultCache.keys().next().value;
+    if (oldest) resultCache.delete(oldest);
+  }
+  resultCache.set(key, { value, expires: Date.now() + CACHE_TTL_MS });
+}
+
 function friendlyMessage(raw?: string): string {
   if (!raw) return "We couldn't process this TikTok. Please try a different link.";
   const m = raw.toLowerCase();
@@ -226,6 +255,10 @@ export const fetchTikTok = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }): Promise<TikTokResult> => {
     try {
+      const cacheKey = data.url.trim();
+      const cached = cacheGet(cacheKey);
+      if (cached) return cached;
+
       const isMusicUrl = /tiktok\.com\/music\//i.test(data.url);
 
       if (isMusicUrl) {
@@ -235,7 +268,7 @@ export const fetchTikTok = createServerFn({ method: "POST" })
         );
         if (mj?.code === 0 && mj.data?.play) {
           const md = mj.data;
-          return {
+          const out: TikTokSuccess = {
             ok: true,
             title: (md.title ?? "TikTok audio").trim() || "TikTok audio",
             author: md.author ?? "TikTok",
@@ -245,6 +278,8 @@ export const fetchTikTok = createServerFn({ method: "POST" })
             videoWatermark: "",
             audio: md.play,
           };
+          cacheSet(cacheKey, out);
+          return out;
         }
         // Fall through to generic endpoint as a last resort.
       }
@@ -256,13 +291,13 @@ export const fetchTikTok = createServerFn({ method: "POST" })
 
       if (!json) {
         const fallback = await callFallbackProviders(data.url);
-        if (fallback) return fallback;
+        if (fallback) { cacheSet(cacheKey, fallback); return fallback; }
         return { ok: false, error: "High demand right now — keep this page open and retry; StashTik will keep trying for you." };
       }
 
       if (json.code !== 0 || !json.data) {
         const fallback = await callFallbackProviders(data.url);
-        if (fallback) return fallback;
+        if (fallback) { cacheSet(cacheKey, fallback); return fallback; }
         return { ok: false, error: friendlyMessage(json.msg) };
       }
 
@@ -287,7 +322,7 @@ export const fetchTikTok = createServerFn({ method: "POST" })
       }
 
       const noWatermark = d.play || d.hdplay || d.wmplay || "";
-      return {
+      const out: TikTokSuccess = {
         ok: true,
         title: (d.title ?? "TikTok video").trim() || "TikTok video",
         author: d.author?.nickname ?? d.author?.unique_id ?? "Unknown",
@@ -299,6 +334,8 @@ export const fetchTikTok = createServerFn({ method: "POST" })
         audio: d.music ?? "",
         images: d.images,
       };
+      cacheSet(cacheKey, out);
+      return out;
     } catch (err) {
       console.error("TikTok fetch failed", err);
       return {
