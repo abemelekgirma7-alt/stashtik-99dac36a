@@ -4,6 +4,7 @@ import { PageHero } from "@/components/PageHero";
 import { DownloaderForm } from "@/components/DownloaderForm";
 import { HomeSections } from "@/components/HomeSections";
 import illustrationAudio from "@/assets/illustration-audio.png";
+import { absUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/mp3")({
   head: () => ({
@@ -16,7 +17,9 @@ export const Route = createFileRoute("/mp3")({
       },
       { property: "og:title", content: "TikTok MP3 Downloader — StashTik" },
       { property: "og:description", content: "Download TikTok audio as MP3 instantly." },
+      { property: "og:url", content: absUrl("/mp3") },
     ],
+    links: [{ rel: "canonical", href: absUrl("/mp3") }],
   }),
   component: Mp3,
 });
