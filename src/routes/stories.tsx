@@ -4,6 +4,7 @@ import { PageHero } from "@/components/PageHero";
 import { DownloaderForm } from "@/components/DownloaderForm";
 import { HomeSections } from "@/components/HomeSections";
 import illustrationStories from "@/assets/illustration-stories.png";
+import { absUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/stories")({
   head: () => ({
@@ -16,7 +17,9 @@ export const Route = createFileRoute("/stories")({
       },
       { property: "og:title", content: "TikTok Story Downloader — StashTik" },
       { property: "og:description", content: "Save public TikTok stories without watermark." },
+      { property: "og:url", content: absUrl("/stories") },
     ],
+    links: [{ rel: "canonical", href: absUrl("/stories") }],
   }),
   component: Stories,
 });

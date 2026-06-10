@@ -3,6 +3,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { PageHero } from "@/components/PageHero";
 import { DownloaderForm } from "@/components/DownloaderForm";
 import { HomeSections } from "@/components/HomeSections";
+import { absUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/photos")({
   head: () => ({
@@ -15,7 +16,9 @@ export const Route = createFileRoute("/photos")({
       },
       { property: "og:title", content: "TikTok Photo Downloader — StashTik" },
       { property: "og:description", content: "Save TikTok slideshow photos without watermark." },
+      { property: "og:url", content: absUrl("/photos") },
     ],
+    links: [{ rel: "canonical", href: absUrl("/photos") }],
   }),
   component: Photos,
 });

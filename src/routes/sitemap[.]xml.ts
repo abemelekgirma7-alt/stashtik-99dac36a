@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { SITE_URL } from "@/lib/seo";
 
-const BASE_URL = "";
+const BASE_URL = SITE_URL;
 
 const paths = [
   { path: "/", priority: "1.0", changefreq: "weekly" as const },
   { path: "/stories", priority: "0.9", changefreq: "weekly" as const },
+  { path: "/photos", priority: "0.9", changefreq: "weekly" as const },
   { path: "/mp3", priority: "0.9", changefreq: "weekly" as const },
   { path: "/how-to", priority: "0.7", changefreq: "monthly" as const },
   { path: "/app", priority: "0.7", changefreq: "monthly" as const },
@@ -20,10 +22,11 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        const lastmod = new Date().toISOString().slice(0, 10);
         const urls = paths
           .map(
             (e) =>
-              `  <url>\n    <loc>${BASE_URL}${e.path}</loc>\n    <changefreq>${e.changefreq}</changefreq>\n    <priority>${e.priority}</priority>\n  </url>`,
+              `  <url>\n    <loc>${BASE_URL}${e.path}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${e.changefreq}</changefreq>\n    <priority>${e.priority}</priority>\n  </url>`,
           )
           .join("\n");
         const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;

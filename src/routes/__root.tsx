@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SITE_NAME, jsonLd, organizationSchema, websiteSchema } from "../lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -81,6 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Stashtik: Download tiktok Video Without Watermark" },
       { name: "description", content: "Free TikTok video downloader without watermark. HD MP4, MP3 audio, Slides, Pthos and stories." },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: SITE_NAME },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Stashtik: Download tiktok Video Without Watermark" },
       { name: "twitter:title", content: "Stashtik: Download tiktok Video Without Watermark" },
@@ -99,6 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
       },
     ],
+    scripts: [jsonLd(websiteSchema()), jsonLd(organizationSchema())],
   }),
   shellComponent: RootShell,
   component: RootComponent,

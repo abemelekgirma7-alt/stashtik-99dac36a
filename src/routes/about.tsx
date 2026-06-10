@@ -3,6 +3,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { PageHero } from "@/components/PageHero";
 import { Smartphone, Globe, AppWindow, Mail } from "lucide-react";
 import illustrationVideo from "@/assets/illustration-video.png";
+import { absUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -11,7 +12,9 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "Learn about StashTik, our mission, and what's coming next." },
       { property: "og:title", content: "About StashTik" },
       { property: "og:description", content: "Who we are and what StashTik does." },
+      { property: "og:url", content: absUrl("/about") },
     ],
+    links: [{ rel: "canonical", href: absUrl("/about") }],
   }),
   component: About,
 });

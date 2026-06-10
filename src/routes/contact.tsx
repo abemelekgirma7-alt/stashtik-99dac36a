@@ -4,6 +4,7 @@ import { PageHero } from "@/components/PageHero";
 import { useState } from "react";
 import { Mail, Send, CheckCircle2 } from "lucide-react";
 import { z } from "zod";
+import { absUrl } from "@/lib/seo";
 
 const CONTACT_EMAIL = "abimelekgirma@gmail.com";
 
@@ -12,7 +13,11 @@ export const Route = createFileRoute("/contact")({
     meta: [
       { title: "Contact StashTik" },
       { name: "description", content: "Get in touch with the StashTik team." },
+      { property: "og:title", content: "Contact StashTik" },
+      { property: "og:description", content: "Get in touch with the StashTik team." },
+      { property: "og:url", content: absUrl("/contact") },
     ],
+    links: [{ rel: "canonical", href: absUrl("/contact") }],
   }),
   component: Contact,
 });
