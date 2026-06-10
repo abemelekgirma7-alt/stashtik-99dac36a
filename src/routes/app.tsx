@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/SiteLayout";
 import { PageHero } from "@/components/PageHero";
 import { Smartphone, MonitorSmartphone, Zap, ShieldCheck, Globe, AppWindow } from "lucide-react";
+import { absUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -14,7 +15,9 @@ export const Route = createFileRoute("/app")({
       },
       { property: "og:title", content: "Install StashTik App" },
       { property: "og:description", content: "Add StashTik to your home screen for one-tap access." },
+      { property: "og:url", content: absUrl("/app") },
     ],
+    links: [{ rel: "canonical", href: absUrl("/app") }],
   }),
   component: AppPage,
 });
