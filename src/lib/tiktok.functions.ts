@@ -255,6 +255,10 @@ export const fetchTikTok = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }): Promise<TikTokResult> => {
     try {
+      const cacheKey = data.url.trim();
+      const cached = cacheGet(cacheKey);
+      if (cached) return cached;
+
       const isMusicUrl = /tiktok\.com\/music\//i.test(data.url);
 
       if (isMusicUrl) {
@@ -264,7 +268,7 @@ export const fetchTikTok = createServerFn({ method: "POST" })
         );
         if (mj?.code === 0 && mj.data?.play) {
           const md = mj.data;
-          return {
+          const out: TikTokSuccess = {
             ok: true,
             title: (md.title ?? "TikTok audio").trim() || "TikTok audio",
             author: md.author ?? "TikTok",
@@ -274,6 +278,8 @@ export const fetchTikTok = createServerFn({ method: "POST" })
             videoWatermark: "",
             audio: md.play,
           };
+          cacheSet(cacheKey, out);
+          return out;
         }
         // Fall through to generic endpoint as a last resort.
       }
@@ -285,13 +291,13 @@ export const fetchTikTok = createServerFn({ method: "POST" })
 
       if (!json) {
         const fallback = await callFallbackProviders(data.url);
-        if (fallback) return fallback;
+        if (fallback) { cacheSet(cacheKey, fallback); return fallback; }
         return { ok: false, error: "High demand right now — keep this page open and retry; StashTik will keep trying for you." };
       }
 
       if (json.code !== 0 || !json.data) {
         const fallback = await callFallbackProviders(data.url);
-        if (fallback) return fallback;
+        if (fallback) { cacheSet(cacheKey, fallback); return fallback; }
         return { ok: false, error: friendlyMessage(json.msg) };
       }
 
@@ -316,7 +322,7 @@ export const fetchTikTok = createServerFn({ method: "POST" })
       }
 
       const noWatermark = d.play || d.hdplay || d.wmplay || "";
-      return {
+      const out: TikTokSuccess = {
         ok: true,
         title: (d.title ?? "TikTok video").trim() || "TikTok video",
         author: d.author?.nickname ?? d.author?.unique_id ?? "Unknown",
@@ -328,6 +334,8 @@ export const fetchTikTok = createServerFn({ method: "POST" })
         audio: d.music ?? "",
         images: d.images,
       };
+      cacheSet(cacheKey, out);
+      return out;
     } catch (err) {
       console.error("TikTok fetch failed", err);
       return {

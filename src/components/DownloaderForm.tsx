@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { fetchTikTok } from "@/lib/tiktok.functions";
 import { ClipboardPaste, Download, Loader2, CheckCircle2 } from "lucide-react";
 import type { Mode } from "./ResultCard";
 
@@ -15,6 +17,8 @@ export function DownloaderForm({
   placeholder?: string;
 }) {
   const navigate = useNavigate();
+  const prefetchFn = useServerFn(fetchTikTok);
+  const prefetchedRef = useRef<string>("");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -110,6 +114,12 @@ export function DownloaderForm({
     if (!TIKTOK_RE.test(trimmed)) return;
     if (autoSubmittedRef.current === trimmed) return;
     autoSubmittedRef.current = trimmed;
+    // Fire-and-forget prefetch so the cache is warm by the time
+    // the result page calls fetchTikTok — makes the download feel instant.
+    if (prefetchedRef.current !== trimmed) {
+      prefetchedRef.current = trimmed;
+      prefetchFn({ data: { url: trimmed } } as never).catch(() => {});
+    }
     submit(trimmed);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
