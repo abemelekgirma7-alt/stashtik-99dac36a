@@ -35,6 +35,35 @@ export type TikTokSuccess = {
 
 export type TikTokResult = TikTokSuccess | { ok: false; error: string };
 
+// Simple in-memory LRU cache for resolved TikTok metadata. Cloudflare Workers
+// keep this per-isolate, so repeated downloads of the same link in the same
+// region skip the upstream round-trip entirely.
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 min — TikTok CDN URLs expire fast
+const CACHE_MAX = 500;
+type CacheEntry = { value: TikTokSuccess; expires: number };
+const resultCache = new Map<string, CacheEntry>();
+
+function cacheGet(key: string): TikTokSuccess | null {
+  const hit = resultCache.get(key);
+  if (!hit) return null;
+  if (hit.expires < Date.now()) {
+    resultCache.delete(key);
+    return null;
+  }
+  // refresh LRU order
+  resultCache.delete(key);
+  resultCache.set(key, hit);
+  return hit.value;
+}
+
+function cacheSet(key: string, value: TikTokSuccess) {
+  if (resultCache.size >= CACHE_MAX) {
+    const oldest = resultCache.keys().next().value;
+    if (oldest) resultCache.delete(oldest);
+  }
+  resultCache.set(key, { value, expires: Date.now() + CACHE_TTL_MS });
+}
+
 function friendlyMessage(raw?: string): string {
   if (!raw) return "We couldn't process this TikTok. Please try a different link.";
   const m = raw.toLowerCase();

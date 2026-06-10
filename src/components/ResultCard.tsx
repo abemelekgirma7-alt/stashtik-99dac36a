@@ -29,8 +29,8 @@ export function makeFilename(title: string, ext: string) {
       // collapse whitespace
       .replace(/\s+/g, " ")
       .trim()
-      .slice(0, 80) || "tiktok";
-  return `StashTik-(${clean}).${ext}`;
+    .slice(0, 80) || "tiktok";
+  return `[StashTik] ${clean}.${ext}`;
 }
 
 export function proxiedDownloadUrl(url: string, filename: string) {
