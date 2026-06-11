@@ -71,7 +71,7 @@ export function HomeSections() {
           description="Quick answers about StashTik and our TikTok tools."
         />
         <div className="mx-auto mt-8 max-w-3xl">
-          <Accordion type="single" collapsible className="rounded-2xl border border-border bg-card px-2 shadow-soft">
+          <Accordion type="single" collapsible className="glass-card rounded-2xl px-2">
             {faqs.map((f) => (
               <AccordionItem key={f.q} value={f.q} className="px-4">
                 <AccordionTrigger className="text-left font-semibold">{f.q}</AccordionTrigger>
@@ -97,7 +97,7 @@ function SectionHeading({ eyebrow, title, description }: { eyebrow: string; titl
 
 function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-3 shadow-soft transition-all hover:-translate-y-1 hover:shadow-brand sm:p-6">
+    <div className="glass-card rounded-2xl p-3 transition-all hover:-translate-y-1 hover:shadow-brand sm:p-6">
       <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-brand sm:mb-4 sm:h-11 sm:w-11 [&>svg]:h-4 [&>svg]:w-4 sm:[&>svg]:h-5 sm:[&>svg]:w-5">
         {icon}
       </div>

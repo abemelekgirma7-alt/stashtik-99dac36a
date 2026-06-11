@@ -147,7 +147,7 @@ export function DownloaderForm({
     <div className="w-full">
       <form
         onSubmit={onSubmit}
-        className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-soft sm:flex-row sm:items-center sm:gap-2.5 sm:p-2.5"
+        className="glass-card flex flex-col gap-2 rounded-2xl p-2 sm:flex-row sm:items-center sm:gap-2.5 sm:p-2.5"
       >
         <div className="flex flex-1 items-center gap-2 rounded-xl bg-secondary/70 px-3">
           <input

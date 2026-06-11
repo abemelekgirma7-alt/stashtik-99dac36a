@@ -39,35 +39,42 @@
   --radius: 0.875rem;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* Softer, slightly darker off-white so it's easier on the eyes */
-  --background: oklch(0.97 0.008 60);
-  --foreground: oklch(0.18 0.02 280);
-  --card: oklch(0.985 0.005 60);
-  --card-foreground: oklch(0.18 0.02 280);
-  --popover: oklch(0.985 0.005 60);
-  --popover-foreground: oklch(0.18 0.02 280);
+  /* Apple-like dimmed cream — easier on the eyes, premium feel */
+  --background: oklch(0.945 0.01 70);
+  --foreground: oklch(0.16 0.02 280);
+  --card: oklch(0.975 0.006 70);
+  --card-foreground: oklch(0.16 0.02 280);
+  --popover: oklch(0.975 0.006 70);
+  --popover-foreground: oklch(0.16 0.02 280);
 
   --brand-pink: oklch(0.66 0.27 5);
   --brand-orange: oklch(0.74 0.21 50);
 
   --primary: oklch(0.66 0.27 5);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.94 0.012 60);
+  --secondary: oklch(0.915 0.012 70);
   --secondary-foreground: oklch(0.2 0.02 280);
-  --muted: oklch(0.94 0.012 60);
-  --muted-foreground: oklch(0.46 0.02 280);
+  --muted: oklch(0.915 0.012 70);
+  --muted-foreground: oklch(0.44 0.02 280);
   --accent: oklch(0.94 0.04 30);
   --accent-foreground: oklch(0.25 0.05 20);
   --destructive: oklch(0.6 0.23 27);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.88 0.012 60);
-  --input: oklch(0.88 0.012 60);
+  --border: oklch(0.86 0.012 70);
+  --input: oklch(0.86 0.012 70);
   --ring: oklch(0.66 0.27 5);
 
   --gradient-brand: linear-gradient(135deg, #FF0050 0%, #FF6B00 100%);
   --gradient-brand-soft: linear-gradient(135deg, oklch(0.66 0.27 5 / 0.10), oklch(0.74 0.21 50 / 0.10));
-  --shadow-brand: 0 12px 32px -8px oklch(0.66 0.27 5 / 0.35);
-  --shadow-soft: 0 4px 18px -6px oklch(0.2 0.02 280 / 0.12);
+  --shadow-brand: 0 18px 40px -10px oklch(0.66 0.27 5 / 0.45);
+  --shadow-soft:
+    0 1px 0 0 oklch(1 0 0 / 0.7) inset,
+    0 10px 28px -10px oklch(0.2 0.02 280 / 0.18),
+    0 4px 10px -4px oklch(0.2 0.02 280 / 0.10);
+  --shadow-premium:
+    0 1px 0 0 oklch(1 0 0 / 0.75) inset,
+    0 22px 50px -18px oklch(0.18 0.04 280 / 0.28),
+    0 8px 18px -8px oklch(0.18 0.04 280 / 0.14);
 }
 
 .dark {
@@ -90,6 +97,39 @@
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.72 0.25 10);
+}
+
+.dark {
+  --shadow-soft:
+    0 1px 0 0 oklch(1 0 0 / 0.06) inset,
+    0 12px 32px -12px oklch(0 0 0 / 0.65),
+    0 4px 12px -4px oklch(0 0 0 / 0.45);
+  --shadow-premium:
+    0 1px 0 0 oklch(1 0 0 / 0.08) inset,
+    0 24px 60px -20px oklch(0 0 0 / 0.8),
+    0 0 0 1px oklch(1 0 0 / 0.04),
+    0 0 40px -8px oklch(0.66 0.27 5 / 0.25);
+}
+
+@utility shadow-premium {
+  box-shadow: var(--shadow-premium);
+}
+
+@utility glass-card {
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--card) 92%, transparent),
+    color-mix(in oklab, var(--card) 78%, transparent));
+  border: 1px solid color-mix(in oklab, var(--foreground) 7%, transparent);
+  backdrop-filter: blur(10px) saturate(135%);
+  -webkit-backdrop-filter: blur(10px) saturate(135%);
+  box-shadow: var(--shadow-premium);
+}
+.dark .glass-card,
+.dark.glass-card {
+  background: linear-gradient(180deg,
+    color-mix(in oklab, white 5%, transparent),
+    color-mix(in oklab, white 2%, transparent));
+  border-color: color-mix(in oklab, white 9%, transparent);
 }
 
 @layer base {
