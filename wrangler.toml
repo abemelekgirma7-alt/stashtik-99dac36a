@@ -1,4 +1,4 @@
-name = "stashtik-99dac36a"
+name = "stashtik-workers"
 main = "dist/server/server.js"
 compatibility_date = "2026-06-11"
 compatibility_flags = ["nodejs_compat"]
