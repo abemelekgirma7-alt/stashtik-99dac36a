@@ -123,7 +123,7 @@ export function ResultCard({
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-soft animate-fade-up">
+    <div className="glass-card overflow-hidden rounded-2xl animate-fade-up">
       <div className="grid gap-4 p-3 sm:grid-cols-[200px_1fr] sm:gap-5 sm:p-5 md:grid-cols-[240px_1fr]">
         {hasImages ? (
           <div className="relative mx-auto sm:mx-0">
