@@ -16,16 +16,19 @@ const nav = [
 export function Header() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <div className="container mx-auto flex h-14 items-center justify-between gap-2 px-3 sm:h-16 sm:px-4">
         <Logo />
-        <nav className="hidden items-center gap-1 md:flex md:gap-1.5 lg:gap-2">
+        <nav className="glass-pill hidden items-center gap-0.5 px-1.5 py-1 md:flex lg:gap-1">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground md:text-[15px] lg:px-3 lg:text-base"
-              activeProps={{ className: "text-foreground bg-secondary" }}
+              className="relative rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:text-foreground md:text-[14px] lg:px-3.5 lg:text-[15px]"
+              activeProps={{
+                className:
+                  "text-foreground bg-gradient-to-b from-white/90 to-white/60 dark:from-white/15 dark:to-white/5 shadow-glass-inset ring-1 ring-black/5 dark:ring-white/10",
+              }}
               activeOptions={{ exact: n.to === "/" }}
             >
               {n.label}
